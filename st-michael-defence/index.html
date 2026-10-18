@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>St Michael Defence</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#0e1020;overflow:hidden;touch-action:none;font-family:Georgia,serif}
+#wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+canvas{display:block;background:#121428;max-width:100%;max-height:100%;touch-action:none}
+#ui{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2}
+#panel{pointer-events:auto;background:rgba(10,12,28,.94);border:1px solid #c9a86c;border-radius:16px;padding:28px 24px;width:min(300px,90vw);text-align:center;color:#f5e6c8}
+#panel h1{font-size:1.25rem;color:#ffd98a;margin-bottom:8px}
+#panel p{font-size:.85rem;line-height:1.45;margin-bottom:16px;opacity:.9}
+#panel button{display:block;width:100%;margin:8px 0;padding:12px;border:none;border-radius:10px;background:#c9a86c;color:#0e1020;font:600 1rem Georgia,serif;cursor:pointer}
+#panel button.sec{background:transparent;border:1px solid #c9a86c;color:#f5e6c8}
+#mute{position:fixed;top:10px;right:10px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid #c9a86c;background:rgba(10,12,28,.8);color:#f5e6c8;font-size:1.1rem;cursor:pointer}
+#hud{position:fixed;top:12px;left:12px;z-index:3;color:#f5e6c8;font-size:.85rem;text-shadow:0 1px 3px #000;pointer-events:none}
+</style></head><body>
+<button id="mute" aria-label="Mute">🔊</button>
+<div id="hud"></div>
+<div id="ui"><div id="panel"></div></div>
+<div id="wrap"><canvas id="c" width="360" height="780"></canvas></div>
+<script>
+const W=360,H=780,KEY='mikeBest',cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const ui=document.getElementById('ui'),panel=document.getElementById('panel'),hud=document.getElementById('hud'),muteBtn=document.getElementById('mute');
+let muted=localStorage.getItem('cmgMute')==='1',AC,state='menu',score=0,best=+localStorage.getItem(KEY)||0;
+let px=W/2,shots=[],wisps=[],pups=[],shield=0,spread=0,wave=1,wispSpeed=.6,fireCd=0,t=0,drag=false;
+muteBtn.textContent=muted?'🔇':'🔊';
+muteBtn.onclick=()=>{muted=!muted;localStorage.setItem('cmgMute',muted?'1':'0');muteBtn.textContent=muted?'🔇':'🔊'};
+function beep(f,d,type='sine',v=.07){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+function show(html){panel.innerHTML=html;ui.style.display='flex'}
+function hide(){ui.style.display='none'}
+function startScreen(){state='menu';show(`<h1>St Michael Defence</h1><p>St Michael auto-fires holy light. Drag or ← → to move. Banishes shadowy wisps. Holy water = spread shot; rosary = shield. Waves grow faster.</p><button id="go">Defend</button>`);document.getElementById('go').onclick=start}
+function gameOver(){state='over';best=Math.max(best,score);localStorage.setItem(KEY,best);beep(160,.4,'triangle');show(`<h1>Light Holds</h1><p>Score: ${score}<br>Best: ${best}<br>Wave: ${wave}</p><button id="again">Play again</button><button class="sec" id="back">Back to menu</button>`);document.getElementById('again').onclick=start;document.getElementById('back').onclick=()=>location.href='../'}
+function start(){hide();state='play';score=0;px=W/2;shots=[];wisps=[];pups=[];shield=0;spread=0;wave=1;wispSpeed=.6;fireCd=0;t=0;spawnWave();beep(600,.12)}
+function spawnWave(){const n=4+Math.min(10,wave*2);for(let i=0;i<n;i++)wisps.push({x:40+(i%5)*56+(Math.random()*10),y:40+Math.floor(i/5)*44,hp:1+Math.floor(wave/3),vx:(Math.random()-.5)*.3})}
+function fire(){const dirs=spread>0?[-1,0,1]:[0];dirs.forEach(d=>shots.push({x:px,y:H-90,vx:d*2.2,vy:-7}));beep(880,.04,'square',.04);if(spread>0)spread--}
+function update(){if(state!=='play')return;t++;if(--fireCd<=0){fire();fireCd=18}if(shield>0)shield--;
+shots.forEach(s=>{s.x+=s.vx;s.y+=s.vy});shots=shots.filter(s=>s.y>-20&&s.x>0&&s.x<W);
+wisps.forEach(w=>{w.y+=wispSpeed;w.x+=w.vx;if(w.x<20||w.x>W-20)w.vx*=-1});
+pups.forEach(p=>p.y+=1.5);
+for(const s of shots){for(const w of wisps){if(Math.hypot(s.x-w.x,s.y-w.y)<18){w.hp--;s.y=-99;score+=10;beep(520,.05);if(w.hp<=0){score+=15;if(Math.random()<.18)pups.push({x:w.x,y:w.y,type:Math.random()<.5?'water':'rosary'})}}}}
+wisps=wisps.filter(w=>w.hp>0);
+pups=pups.filter(p=>{if(p.y>H)return false;if(Math.hypot(p.x-px,p.y-(H-70))<30){if(p.type==='water'){spread=40;beep(700,.1)}else{shield=180;beep(480,.15)}score+=25;return false}return true});
+if(wisps.some(w=>w.y>H-100)){if(shield>0){wisps=wisps.filter(w=>w.y<=H-100);shield=0;beep(300,.1)}else{gameOver();return}}
+if(!wisps.length){wave++;wispSpeed=.6+wave*.12;score+=50;spawnWave();beep(660,.15)}
+hud.textContent=`Score ${score} · Best ${best} · Wave ${wave}${shield?' · ✝':''}${spread?' · ✠':''}`}
+function draw(){ctx.clearRect(0,0,W,H);
+const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0a0c20');g.addColorStop(1,'#1a1835');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+for(let i=0;i<40;i++){ctx.fillStyle=`rgba(255,255,220,${.2+((t+i*7)%40)/80})`;ctx.fillRect((i*47+t*.1)%W,(i*31)%(H*.6),1.5,1.5)}
+wisps.forEach(w=>{ctx.fillStyle='rgba(40,30,60,.7)';ctx.beginPath();ctx.ellipse(w.x,w.y,14,18,0,0,6.28);ctx.fill();ctx.fillStyle='rgba(80,60,100,.5)';ctx.beginPath();ctx.ellipse(w.x,w.y-4,8,10,0,0,6.28);ctx.fill();ctx.fillStyle='rgba(120,80,160,.3)';ctx.beginPath();ctx.arc(w.x-4,w.y-6,2,0,6.28);ctx.arc(w.x+4,w.y-6,2,0,6.28);ctx.fill()});
+shots.forEach(s=>{ctx.fillStyle='#ffe8a0';ctx.shadowColor='#ffd060';ctx.shadowBlur=8;ctx.beginPath();ctx.ellipse(s.x,s.y,3,8,0,0,6.28);ctx.fill();ctx.shadowBlur=0});
+pups.forEach(p=>{ctx.fillStyle=p.type==='water'?'#80c0e8':'#c9a86c';ctx.beginPath();ctx.arc(p.x,p.y,9,0,6.28);ctx.fill();ctx.fillStyle='#fff';ctx.font='10px Georgia';ctx.textAlign='center';ctx.fillText(p.type==='water'?'💧':'📿',p.x,p.y+3)});
+const my=H-70;if(shield>0){ctx.strokeStyle='rgba(255,220,120,.5)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(px,my,32,0,6.28);ctx.stroke()}
+ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(px,my-28);ctx.lineTo(px-22,my+10);ctx.lineTo(px-10,my+6);ctx.lineTo(px-8,my+22);ctx.lineTo(px+8,my+22);ctx.lineTo(px+10,my+6);ctx.lineTo(px+22,my+10);ctx.closePath();ctx.fill();
+ctx.fillStyle='#ffd98a';ctx.beginPath();ctx.arc(px,my-32,9,0,6.28);ctx.fill();
+ctx.strokeStyle='#c9a86c';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px+14,my-10);ctx.lineTo(px+14,my-40);ctx.moveTo(px+6,my-32);ctx.lineTo(px+22,my-32);ctx.stroke();
+ctx.fillStyle='#fff8e0';ctx.font='14px Georgia';ctx.textAlign='center';ctx.fillText('⚔',px-16,my-8)}
+function loop(){update();draw();requestAnimationFrame(loop)}
+function setX(cx){const r=cv.getBoundingClientRect();px=Math.max(28,Math.min(W-28,(cx-r.left)/r.width*W))}
+cv.addEventListener('pointerdown',e=>{drag=true;setX(e.clientX);cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(drag)setX(e.clientX)});
+cv.addEventListener('pointerup',()=>drag=false);
+window.addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')px=Math.max(28,px-16);if(e.code==='ArrowRight'||e.code==='KeyD')px=Math.min(W-28,px+16)});
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);cv.style.width=W*s+'px';cv.style.height=H*s+'px'}
+addEventListener('resize',fit);fit();startScreen();loop();
+</script></body></html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#3d2e1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Catholic Games">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<title>Catholic Games</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;font-family:Georgia,"Times New Roman",serif;background:#2a2118;color:#f5e6c8;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(165deg,#3d2e1f 0%,#2a2118 40%,#1e1810 100%);padding:20px 16px 40px;display:flex;flex-direction:column;align-items:center}
+header{text-align:center;margin-bottom:22px;max-width:400px}
+.cross{width:48px;height:48px;margin:0 auto 10px;display:block}
+h1{font-size:1.75rem;font-weight:600;color:#ffd98a;letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.tag{margin-top:6px;font-size:.88rem;opacity:.75;line-height:1.4}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:400px}
+a.tile{display:flex;flex-direction:column;align-items:center;text-align:center;text-decoration:none;color:#f5e6c8;background:linear-gradient(160deg,rgba(80,60,40,.55),rgba(50,38,26,.75));border:1px solid rgba(201,168,108,.35);border-radius:16px;padding:14px 10px 12px;min-height:168px;transition:transform .15s,background .15s;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+a.tile:hover,a.tile:focus{background:linear-gradient(160deg,rgba(100,75,48,.65),rgba(60,45,30,.85));border-color:rgba(255,217,138,.55);transform:translateY(-2px)}
+a.tile:active{transform:translateY(0)}
+a.tile.wide{grid-column:1/-1;min-height:auto;flex-direction:row;gap:14px;text-align:left;padding:14px 16px}
+a.tile.wide .ico{flex-shrink:0}
+a.tile.wide .meta{align-items:flex-start}
+.ico{width:56px;height:56px;margin-bottom:8px}
+a.tile.wide .ico{margin-bottom:0}
+.meta{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%}
+.meta h2{font-size:1rem;color:#ffd98a;font-weight:600;line-height:1.2}
+.meta p{font-size:.72rem;line-height:1.35;opacity:.85}
+.best{font-size:.7rem;margin-top:4px;color:#c9a86c;opacity:.95}
+.sec-label{grid-column:1/-1;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#c9a86c;opacity:.7;margin:8px 0 0;text-align:center}
+footer{margin-top:28px;font-size:.72rem;opacity:.5;text-align:center}
+</style>
+</head>
+<body>
+<header>
+<svg class="cross" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#3d2e1f" stroke="#c9a86c" stroke-width="2"/><rect x="21" y="8" width="6" height="32" rx="1" fill="#ffd98a"/><rect x="12" y="16" width="24" height="6" rx="1" fill="#ffd98a"/></svg>
+<h1>Catholic Games</h1>
+<p class="tag">Quiet games of faith — add to your home screen</p>
+</header>
+<nav class="grid" id="grid"></nav>
+<footer>Made with reverence · Play gently</footer>
+<script>
+const GAMES=[
+{href:'candle-runner/',key:'candleBest',name:'Candle Runner',desc:'Carry a lit candle down the aisle.',draw:drawCandle},
+{href:'procession-dash/',key:'procBest',name:'Procession Dash',desc:'Steer the Corpus Christi procession.',draw:drawProcession},
+{href:'st-michael-defence/',key:'mikeBest',name:'St Michael Defence',desc:'Banishes wisps with holy light.',draw:drawMichael},
+{href:'bell-tower-climb/',key:'bellBest',name:'Bell Tower Climb',desc:'Climb beams and ring the bell.',draw:drawBell},
+{href:'noahs-ark-catch/',key:'noahBest',name:'Noah\'s Ark Catch',desc:'Catch animal pairs in the rain.',draw:drawArk},
+];
+const EXT=[
+{href:'https://m91028238-hash.github.io/altar-server-game/',name:'Altar Server',desc:'Serve at the altar with care.',draw:drawAltar},
+{href:'https://m91028238-hash.github.io/parish-priest/',name:'Parish Priest',desc:'Story game for adults.',draw:drawPriest},
+];
+function mkIcon(draw){const c=document.createElement('canvas');c.width=112;c.height=112;c.className='ico';draw(c.getContext('2d'));return c}
+function drawCandle(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#e8e0d0';ctx.fillRect(50,40,12,42);ctx.fillStyle='#ffb040';ctx.beginPath();ctx.ellipse(56,34,8,14,0,0,6.28);ctx.fill();ctx.fillStyle='#fff8c0';ctx.beginPath();ctx.ellipse(56,32,3,7,0,0,6.28);ctx.fill()}
+function drawProcession(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#f5f0e8';ctx.fillRect(48,50,16,28);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,44,9,0,6.28);ctx.fill();ctx.fillStyle='#ffd98a';ctx.fillRect(54,18,4,22);ctx.beginPath();ctx.moveTo(56,14);ctx.lineTo(48,24);ctx.lineTo(64,24);ctx.fill();ctx.fillStyle='#d0c8e8';ctx.fillRect(30,62,12,20);ctx.fillRect(70,62,12,20)}
+function drawMichael(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(56,28);ctx.lineTo(36,70);ctx.lineTo(48,66);ctx.lineTo(50,82);ctx.lineTo(62,82);ctx.lineTo(64,66);ctx.lineTo(76,70);ctx.closePath();ctx.fill();ctx.fillStyle='#ffd98a';ctx.beginPath();ctx.arc(56,24,8,0,6.28);ctx.fill();ctx.strokeStyle='#ffe8a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(72,40);ctx.lineTo(72,18);ctx.moveTo(64,28);ctx.lineTo(80,28);ctx.stroke()}
+function drawBell(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#c9a86c';ctx.beginPath();ctx.arc(56,58,22,0,6.28);ctx.fill();ctx.fillStyle='#a08040';ctx.fillRect(52,28,8,20);ctx.fillStyle='#fff8e0';ctx.beginPath();ctx.arc(56,62,4,0,6.28);ctx.fill()}
+function drawArk(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#8a6238';ctx.beginPath();ctx.moveTo(20,70);ctx.lineTo(28,88);ctx.lineTo(84,88);ctx.lineTo(92,70);ctx.closePath();ctx.fill();ctx.fillStyle='#a07848';ctx.fillRect(32,52,48,20);ctx.fillStyle='#c9a86c';ctx.fillRect(54,30,4,24);ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(58,30);ctx.lineTo(82,42);ctx.lineTo(58,48);ctx.fill()}
+function drawAltar(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#e8e0d0';ctx.fillRect(28,68,56,14);ctx.fillRect(36,52,40,18);ctx.fillStyle='#ffd98a';ctx.fillRect(53,28,6,28);ctx.fillRect(44,36,24,6)}
+function drawPriest(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#2a2a30';ctx.fillRect(42,52,28,34);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,42,12,0,6.28);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(52,58,8,14)}
+function tile(g,ext){
+  const a=document.createElement('a');a.className='tile'+(ext?' wide':'');a.href=g.href;if(ext){a.target='_blank';a.rel='noopener'}
+  a.appendChild(mkIcon(g.draw));
+  const m=document.createElement('div');m.className='meta';
+  m.innerHTML=`<h2>${g.name}</h2><p>${g.desc}</p>`;
+  if(g.key){const b=+localStorage.getItem(g.key)||0;const s=document.createElement('span');s.className='best';s.textContent=b?`Best ${b}`:'Best —';m.appendChild(s)}
+  else{const s=document.createElement('span');s.className='best';s.textContent='Open →';m.appendChild(s)}
+  a.appendChild(m);return a}
+const grid=document.getElementById('grid');
+GAMES.forEach(g=>grid.appendChild(tile(g,false)));
+const lab=document.createElement('div');lab.className='sec-label';lab.textContent='More games';grid.appendChild(lab);
+EXT.forEach(g=>grid.appendChild(tile(g,true)));
+</script>
+</body>
+</html>
