@@ -15,42 +15,60 @@ canvas{display:block;background:#243848;max-width:100%;max-height:100%;touch-act
 #panel button.sec{background:transparent;border:1px solid #c9a86c;color:#f5e6c8}
 #mute{position:fixed;top:10px;right:10px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid #c9a86c;background:rgba(16,28,40,.8);color:#f5e6c8;font-size:1.1rem;cursor:pointer}
 #hud{position:fixed;top:12px;left:12px;z-index:3;color:#f5e6c8;font-size:.85rem;text-shadow:0 1px 3px #000;pointer-events:none}
+#banner{position:fixed;top:42%;left:0;right:0;z-index:4;text-align:center;font:600 1.4rem Georgia,serif;color:#ffd98a;text-shadow:0 2px 8px #000;pointer-events:none;opacity:0;transition:opacity .2s}
 </style></head><body>
 <button id="mute" aria-label="Mute">🔊</button>
-<div id="hud"></div>
+<div id="hud"></div><div id="banner"></div>
 <div id="ui"><div id="panel"></div></div>
 <div id="wrap"><canvas id="c" width="360" height="780"></canvas></div>
 <script>
-const W=360,H=780,KEY='noahBest',cv=document.getElementById('c'),ctx=cv.getContext('2d');
-const ui=document.getElementById('ui'),panel=document.getElementById('panel'),hud=document.getElementById('hud'),muteBtn=document.getElementById('mute');
-let muted=localStorage.getItem('cmgMute')==='1',AC,state='menu',score=0,best=+localStorage.getItem(KEY)||0;
+const W=360,H=780,KEY='noahBest',LKEY='noahLvl',cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const ui=document.getElementById('ui'),panel=document.getElementById('panel'),hud=document.getElementById('hud'),muteBtn=document.getElementById('mute'),banEl=document.getElementById('banner');
+let muted=localStorage.getItem('cmgMute')==='1',AC,state='menu',score=0,best=+localStorage.getItem(KEY)||0,maxLvl=+localStorage.getItem(LKEY)||0;
 const ANIM=['🐑','🕊️','🐇','🦊','🐻','🦌','🐐','🦉'];
-let ax=W/2,falls=[],logs=[],caught={},day=0,round=1,fallSpeed=1.8,t=0,drag=false,rainbow=0,lives=3;
+let ax=W/2,falls=[],logs=[],caught={},day=0,level=1,t=0,drag=false,rainbow=0,lives=3,bannerT=0;
 muteBtn.textContent=muted?'🔇':'🔊';
 muteBtn.onclick=()=>{muted=!muted;localStorage.setItem('cmgMute',muted?'1':'0');muteBtn.textContent=muted?'🔇':'🔊'};
 function beep(f,d,type='sine',v=.08){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
 function show(html){panel.innerHTML=html;ui.style.display='flex'}
 function hide(){ui.style.display='none'}
-function startScreen(){state='menu';show(`<h1>Noah's Ark Catch</h1><p>Move the ark left/right (drag or ← →). Catch pairs of animals in the rain for a bonus. Avoid floating logs. A rainbow greets each 40-day round.</p><button id="go">Set sail</button>`);document.getElementById('go').onclick=start}
-function gameOver(){state='over';best=Math.max(best,score);localStorage.setItem(KEY,best);beep(200,.35,'triangle');show(`<h1>Flood Passes</h1><p>Score: ${score}<br>Best: ${best}<br>Round ${round}</p><button id="again">Play again</button><button class="sec" id="back">Back to menu</button>`);document.getElementById('again').onclick=start;document.getElementById('back').onclick=()=>location.href='../'}
-function start(){hide();state='play';score=0;ax=W/2;falls=[];logs=[];caught={};day=0;round=1;fallSpeed=1.8;t=0;rainbow=0;lives=3;beep(440,.1)}
-function spawn(){if(Math.random()<.7){const kind=ANIM[Math.floor(Math.random()*ANIM.length)];falls.push({x:30+Math.random()*(W-60),y:-30,kind,vy:fallSpeed+Math.random()*.8})}else logs.push({x:30+Math.random()*(W-60),y:-30,vy:fallSpeed*.9})}
-function update(){if(state!=='play')return;t++;if(rainbow>0){rainbow--;if(rainbow===0){round++;fallSpeed=1.8+round*.25;day=0;caught={};beep(600,.12)}return}
-if(t%Math.max(22,48-round*3)===0)spawn();
+function flashBanner(txt){banEl.textContent=txt;banEl.style.opacity='1';bannerT=70}
+/* fallSpeed, spawnGap, animalRate, daysNeeded; rock@4, wave@8, twinLog@12 */
+const LT={1:{fs:1.8,sg:48,ar:.72,dn:40},2:{fs:2.0,sg:44,ar:.7,dn:38},3:{fs:2.2,sg:40,ar:.68,dn:36},4:{fs:2.4,sg:38,ar:.66,dn:34},
+5:{fs:2.6,sg:36,ar:.64,dn:32},6:{fs:2.8,sg:34,ar:.62,dn:30},7:{fs:3.0,sg:32,ar:.6,dn:28},8:{fs:3.2,sg:30,ar:.58,dn:28},
+9:{fs:3.4,sg:28,ar:.56,dn:26},10:{fs:3.6,sg:27,ar:.54,dn:26},11:{fs:3.8,sg:26,ar:.52,dn:24},12:{fs:4.0,sg:25,ar:.5,dn:24},
+13:{fs:4.2,sg:24,ar:.48,dn:22},14:{fs:4.4,sg:23,ar:.46,dn:22},15:{fs:4.6,sg:22,ar:.44,dn:20},16:{fs:4.8,sg:22,ar:.42,dn:20},
+17:{fs:5.0,sg:21,ar:.4,dn:18},18:{fs:5.1,sg:21,ar:.38,dn:18},19:{fs:5.2,sg:20,ar:.36,dn:16},20:{fs:5.3,sg:20,ar:.35,dn:16}};
+function L(n){return LT[Math.min(20,Math.max(1,n))]||LT[20]}
+function startScreen(){state='menu';show(`<h1>Noah's Ark Catch</h1><p>Move the ark left/right (drag or ← →). Catch pairs of animals in the rain for a bonus. Avoid floating logs. A rainbow greets each completed level.</p><button id="go">Set sail</button>`);document.getElementById('go').onclick=start}
+function gameOver(){state='over';best=Math.max(best,score);maxLvl=Math.max(maxLvl,level);localStorage.setItem(KEY,best);localStorage.setItem(LKEY,maxLvl);beep(200,.35,'triangle');show(`<h1>Flood Passes</h1><p>Score: ${score}<br>Best: ${best}<br>Level ${level}</p><button id="again">Play again</button><button class="sec" id="back">Back to menu</button>`);document.getElementById('again').onclick=start;document.getElementById('back').onclick=()=>location.href='../'}
+function start(){hide();state='play';score=0;ax=W/2;falls=[];logs=[];caught={};day=0;level=1;t=0;rainbow=0;lives=3;flashBanner('Level 1');beep(440,.1)}
+function spawn(){const cfg=L(level),r=Math.random(),x=30+Math.random()*(W-60);
+if(r<cfg.ar){const kind=ANIM[Math.floor(Math.random()*ANIM.length)];falls.push({x,y:-30,kind,vy:cfg.fs+Math.random()*.8})}
+else{let type='log';if(level>=4&&r>.9)type='rock';if(level>=8&&r>.82&&r<=.9)type='wave';
+logs.push({x,y:-30,vy:cfg.fs*.9,type,w:type==='wave'?70:type==='rock'?30:44});
+if(level>=12&&Math.random()<.4)logs.push({x:(x+100)%(W-60)+30,y:-80,vy:cfg.fs*.85,type:'log',w:44})}}
+function levelUp(){rainbow=120;score+=100*level;maxLvl=Math.max(maxLvl,level);beep(523,.1);setTimeout(()=>beep(659,.1),80);setTimeout(()=>beep(784,.2),160)}
+function update(){if(bannerT>0){bannerT--;if(bannerT===0)banEl.style.opacity='0'}
+if(state!=='play')return;t++;const cfg=L(level);
+if(rainbow>0){rainbow--;if(rainbow===0){level++;day=0;caught={};flashBanner('Level '+level);beep(600,.12)}return}
+if(t%Math.max(16,cfg.sg|0)===0)spawn();
 if(t%90===0)day++;
 falls.forEach(f=>f.y+=f.vy);logs.forEach(l=>l.y+=l.vy);
 const ay=H-100;
 falls=falls.filter(f=>{if(f.y>H+20)return false;if(Math.abs(f.x-ax)<42&&f.y>ay-20&&f.y<ay+30){score+=10;caught[f.kind]=(caught[f.kind]|0)+1;beep(660,.06);if(caught[f.kind]===2){score+=40;beep(880,.12);caught[f.kind]=0}return false}return true});
-logs=logs.filter(l=>{if(l.y>H+20)return false;if(Math.abs(l.x-ax)<48&&l.y>ay-16&&l.y<ay+28){lives--;beep(160,.15,'sawtooth');return false}return true});
+logs=logs.filter(l=>{if(l.y>H+20)return false;const hw=(l.w||44)/2;if(Math.abs(l.x-ax)<hw+20&&l.y>ay-16&&l.y<ay+28){lives-=l.type==='rock'?2:1;beep(160,.15,'sawtooth');return false}return true});
 if(lives<=0){gameOver();return}
-if(day>=40){rainbow=120;score+=100*round;beep(523,.1);setTimeout(()=>beep(659,.1),80);setTimeout(()=>beep(784,.2),160)}
-hud.textContent=`Score ${score} · Best ${best} · Day ${Math.min(day,40)}/40 · ❤${lives}`}
+if(day>=cfg.dn)levelUp();
+hud.textContent=`Score ${score} · Best ${best} · Level ${level} · Day ${Math.min(day,cfg.dn)}/${cfg.dn} · ❤${lives}`}
 function draw(){ctx.clearRect(0,0,W,H);
 const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#2a3a50');g.addColorStop(.55,'#3a5068');g.addColorStop(.55,'#2a6080');g.addColorStop(1,'#1a4060');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
 for(let i=0;i<50;i++){const rx=(i*37+t*3)%W,ry=(i*53+t*8)%H;ctx.strokeStyle='rgba(180,200,220,.35)';ctx.beginPath();ctx.moveTo(rx,ry);ctx.lineTo(rx-2,ry+10);ctx.stroke()}
 if(rainbow>0){const cols=['#e07070','#e0a040','#e0e060','#60c060','#60a0e0','#8060c0'];cols.forEach((c,i)=>{ctx.strokeStyle=c;ctx.lineWidth=8;ctx.globalAlpha=.7;ctx.beginPath();ctx.arc(W/2,H*.55,80+i*10,Math.PI,0);ctx.stroke();ctx.globalAlpha=1})}
 falls.forEach(f=>{ctx.font='22px serif';ctx.textAlign='center';ctx.fillText(f.kind,f.x,f.y)});
-logs.forEach(l=>{ctx.fillStyle='#6a4a28';ctx.fillRect(l.x-22,l.y-8,44,16);ctx.fillStyle='#5a3a20';ctx.fillRect(l.x-22,l.y-8,44,4)});
+logs.forEach(l=>{const w=l.w||44;if(l.type==='wave'){ctx.fillStyle='rgba(100,160,200,.6)';ctx.beginPath();ctx.ellipse(l.x,l.y,w/2,10,0,0,6.28);ctx.fill()}
+else if(l.type==='rock'){ctx.fillStyle='#5a5a58';ctx.beginPath();ctx.ellipse(l.x,l.y,16,12,0,0,6.28);ctx.fill()}
+else{ctx.fillStyle='#6a4a28';ctx.fillRect(l.x-w/2,l.y-8,w,16);ctx.fillStyle='#5a3a20';ctx.fillRect(l.x-w/2,l.y-8,w,4)}});
 const ay=H-100;ctx.fillStyle='#8a6238';ctx.beginPath();ctx.moveTo(ax-50,ay);ctx.lineTo(ax-40,ay+28);ctx.lineTo(ax+40,ay+28);ctx.lineTo(ax+50,ay);ctx.closePath();ctx.fill();ctx.fillStyle='#a07848';ctx.fillRect(ax-35,ay-22,70,24);ctx.fillStyle='#c9a86c';ctx.fillRect(ax-3,ay-48,6,28);ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(ax+3,ay-48);ctx.lineTo(ax+28,ay-36);ctx.lineTo(ax+3,ay-28);ctx.fill();ctx.fillStyle='#fff8e0';ctx.font='14px Georgia';ctx.textAlign='center';ctx.fillText('⛵',ax,ay-8)}
 function loop(){update();draw();requestAnimationFrame(loop)}
 function setX(cx){const r=cv.getBoundingClientRect();ax=Math.max(50,Math.min(W-50,(cx-r.left)/r.width*W))}
@@ -59,5 +77,5 @@ cv.addEventListener('pointermove',e=>{if(drag)setX(e.clientX)});
 cv.addEventListener('pointerup',()=>drag=false);
 window.addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')ax=Math.max(50,ax-20);if(e.code==='ArrowRight'||e.code==='KeyD')ax=Math.min(W-50,ax+20)});
 function fit(){const s=Math.min(innerWidth/W,innerHeight/H);cv.style.width=W*s+'px';cv.style.height=H*s+'px'}
-addEventListener('resize',fit);fit();startScreen();loop();
+addEventListener('resize',fit);fit();window.__cmgTest={getLevel:()=>level,getState:()=>state,advance:()=>{if(state==='menu')start();else{day=L(level).dn;levelUp()}},L};startScreen();loop();
 </script></body></html>

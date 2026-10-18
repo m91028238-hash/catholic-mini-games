@@ -33,7 +33,6 @@ a.tile.wide .ico{margin-bottom:0}
 .meta p{font-size:.72rem;line-height:1.35;opacity:.85}
 .best{font-size:.7rem;margin-top:4px;color:#c9a86c;opacity:.95}
 .sec-label{grid-column:1/-1;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#c9a86c;opacity:.7;margin:8px 0 0;text-align:center}
-footer{margin-top:28px;font-size:.72rem;opacity:.5;text-align:center}
 </style>
 </head>
 <body>
@@ -46,30 +45,35 @@ footer{margin-top:28px;font-size:.72rem;opacity:.5;text-align:center}
 
 <script>
 const GAMES=[
-{href:'candle-runner/',key:'candleBest',name:'Candle Runner',desc:'Carry a lit candle down the aisle.',draw:drawCandle},
-{href:'procession-dash/',key:'procBest',name:'Procession Dash',desc:'Steer the Corpus Christi procession.',draw:drawProcession},
-{href:'st-michael-defence/',key:'mikeBest',name:'St Michael Defence',desc:'Banishes wisps with holy light.',draw:drawMichael},
-{href:'bell-tower-climb/',key:'bellBest',name:'Bell Tower Climb',desc:'Climb beams and ring the bell.',draw:drawBell},
-{href:'noahs-ark-catch/',key:'noahBest',name:'Noah\'s Ark Catch',desc:'Catch animal pairs in the rain.',draw:drawArk},
+{href:'candle-runner/',key:'candleBest',lkey:'candleLvl',name:'Candle Runner',desc:'Carry a lit candle down the aisle.',draw:drawCandle},
+{href:'procession-dash/',key:'procBest',lkey:'procLvl',name:'Procession Dash',desc:'Steer the Corpus Christi procession.',draw:drawProcession},
+{href:'st-michael-defence/',key:'mikeBest',lkey:'mikeLvl',name:'St Michael Defence',desc:'Banishes wisps with holy light.',draw:drawMichael},
+{href:'bell-tower-climb/',key:'bellBest',lkey:'bellLvl',name:'Bell Tower Climb',desc:'Climb beams and ring the bell.',draw:drawBell},
+{href:'noahs-ark-catch/',key:'noahBest',lkey:'noahLvl',name:'Noah\'s Ark Catch',desc:'Catch animal pairs in the rain.',draw:drawArk},
+{href:'cathedral-builder/',key:'cathBest',lkey:'cathLvl',name:'Cathedral Builder',desc:'Stack stones to raise a cathedral.',draw:drawCath},
+{href:'ark-flight/',key:'arkBest',lkey:'arkLvl',name:'Ark Flight',desc:'Guide a dove over the flood.',draw:drawDove},
 ];
 const EXT=[
 {href:'https://m91028238-hash.github.io/altar-server-game/',name:'Altar Server',desc:'Serve at the altar with care.',draw:drawAltar},
 {href:'https://m91028238-hash.github.io/parish-priest/',name:'Parish Priest',desc:'Story game for adults.',draw:drawPriest},
 ];
 function mkIcon(draw){const c=document.createElement('canvas');c.width=112;c.height=112;c.className='ico';draw(c.getContext('2d'));return c}
-function drawCandle(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#e8e0d0';ctx.fillRect(50,40,12,42);ctx.fillStyle='#ffb040';ctx.beginPath();ctx.ellipse(56,34,8,14,0,0,6.28);ctx.fill();ctx.fillStyle='#fff8c0';ctx.beginPath();ctx.ellipse(56,32,3,7,0,0,6.28);ctx.fill()}
-function drawProcession(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#f5f0e8';ctx.fillRect(48,50,16,28);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,44,9,0,6.28);ctx.fill();ctx.fillStyle='#ffd98a';ctx.fillRect(54,18,4,22);ctx.beginPath();ctx.moveTo(56,14);ctx.lineTo(48,24);ctx.lineTo(64,24);ctx.fill();ctx.fillStyle='#d0c8e8';ctx.fillRect(30,62,12,20);ctx.fillRect(70,62,12,20)}
-function drawMichael(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(56,28);ctx.lineTo(36,70);ctx.lineTo(48,66);ctx.lineTo(50,82);ctx.lineTo(62,82);ctx.lineTo(64,66);ctx.lineTo(76,70);ctx.closePath();ctx.fill();ctx.fillStyle='#ffd98a';ctx.beginPath();ctx.arc(56,24,8,0,6.28);ctx.fill();ctx.strokeStyle='#ffe8a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(72,40);ctx.lineTo(72,18);ctx.moveTo(64,28);ctx.lineTo(80,28);ctx.stroke()}
-function drawBell(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#c9a86c';ctx.beginPath();ctx.arc(56,58,22,0,6.28);ctx.fill();ctx.fillStyle='#a08040';ctx.fillRect(52,28,8,20);ctx.fillStyle='#fff8e0';ctx.beginPath();ctx.arc(56,62,4,0,6.28);ctx.fill()}
-function drawArk(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#8a6238';ctx.beginPath();ctx.moveTo(20,70);ctx.lineTo(28,88);ctx.lineTo(84,88);ctx.lineTo(92,70);ctx.closePath();ctx.fill();ctx.fillStyle='#a07848';ctx.fillRect(32,52,48,20);ctx.fillStyle='#c9a86c';ctx.fillRect(54,30,4,24);ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(58,30);ctx.lineTo(82,42);ctx.lineTo(58,48);ctx.fill()}
-function drawAltar(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#e8e0d0';ctx.fillRect(28,68,56,14);ctx.fillRect(36,52,40,18);ctx.fillStyle='#ffd98a';ctx.fillRect(53,28,6,28);ctx.fillRect(44,36,24,6)}
-function drawPriest(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#2a2a30';ctx.fillRect(42,52,28,34);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,42,12,0,6.28);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(52,58,8,14)}
+function ring(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke()}
+function drawCandle(ctx){ring(ctx);ctx.fillStyle='#e8e0d0';ctx.fillRect(50,40,12,42);ctx.fillStyle='#ffb040';ctx.beginPath();ctx.ellipse(56,34,8,14,0,0,6.28);ctx.fill();ctx.fillStyle='#fff8c0';ctx.beginPath();ctx.ellipse(56,32,3,7,0,0,6.28);ctx.fill()}
+function drawProcession(ctx){ring(ctx);ctx.fillStyle='#f5f0e8';ctx.fillRect(48,50,16,28);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,44,9,0,6.28);ctx.fill();ctx.fillStyle='#ffd98a';ctx.fillRect(54,18,4,22);ctx.beginPath();ctx.moveTo(56,14);ctx.lineTo(48,24);ctx.lineTo(64,24);ctx.fill();ctx.fillStyle='#d0c8e8';ctx.fillRect(30,62,12,20);ctx.fillRect(70,62,12,20)}
+function drawMichael(ctx){ring(ctx);ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(56,28);ctx.lineTo(36,70);ctx.lineTo(48,66);ctx.lineTo(50,82);ctx.lineTo(62,82);ctx.lineTo(64,66);ctx.lineTo(76,70);ctx.closePath();ctx.fill();ctx.fillStyle='#ffd98a';ctx.beginPath();ctx.arc(56,24,8,0,6.28);ctx.fill();ctx.strokeStyle='#ffe8a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(72,40);ctx.lineTo(72,18);ctx.moveTo(64,28);ctx.lineTo(80,28);ctx.stroke()}
+function drawBell(ctx){ring(ctx);ctx.fillStyle='#c9a86c';ctx.beginPath();ctx.arc(56,58,22,0,6.28);ctx.fill();ctx.fillStyle='#a08040';ctx.fillRect(52,28,8,20);ctx.fillStyle='#fff8e0';ctx.beginPath();ctx.arc(56,62,4,0,6.28);ctx.fill()}
+function drawArk(ctx){ring(ctx);ctx.fillStyle='#8a6238';ctx.beginPath();ctx.moveTo(20,70);ctx.lineTo(28,88);ctx.lineTo(84,88);ctx.lineTo(92,70);ctx.closePath();ctx.fill();ctx.fillStyle='#a07848';ctx.fillRect(32,52,48,20);ctx.fillStyle='#c9a86c';ctx.fillRect(54,30,4,24);ctx.fillStyle='#e8e0d0';ctx.beginPath();ctx.moveTo(58,30);ctx.lineTo(82,42);ctx.lineTo(58,48);ctx.fill()}
+function drawCath(ctx){ring(ctx);ctx.fillStyle='#c4a574';ctx.fillRect(28,70,56,16);ctx.fillRect(34,54,44,16);ctx.fillRect(40,38,32,16);ctx.fillStyle='#a88860';ctx.beginPath();ctx.moveTo(40,38);ctx.lineTo(56,18);ctx.lineTo(72,38);ctx.fill();ctx.fillStyle='#6a8ab0';ctx.beginPath();ctx.arc(56,48,6,0,6.28);ctx.fill()}
+function drawDove(ctx){ring(ctx);ctx.fillStyle='#2a6080';ctx.fillRect(16,72,80,20);ctx.fillStyle='#f5f5f0';ctx.beginPath();ctx.ellipse(56,48,14,10,0,0,6.28);ctx.fill();ctx.beginPath();ctx.ellipse(40,48,16,5,-.3,0,6.28);ctx.ellipse(72,48,16,5,.3,0,6.28);ctx.fill();ctx.fillStyle='#ffe8a0';ctx.beginPath();ctx.arc(56,30,10,0,6.28);ctx.strokeStyle='#ffe8a0';ctx.lineWidth=3;ctx.stroke()}
+function drawAltar(ctx){ring(ctx);ctx.fillStyle='#e8e0d0';ctx.fillRect(28,68,56,14);ctx.fillRect(36,52,40,18);ctx.fillStyle='#ffd98a';ctx.fillRect(53,28,6,28);ctx.fillRect(44,36,24,6)}
+function drawPriest(ctx){ring(ctx);ctx.fillStyle='#2a2a30';ctx.fillRect(42,52,28,34);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,42,12,0,6.28);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(52,58,8,14)}
 function tile(g,ext){
   const a=document.createElement('a');a.className='tile'+(ext?' wide':'');a.href=g.href;if(ext){a.target='_blank';a.rel='noopener'}
   a.appendChild(mkIcon(g.draw));
   const m=document.createElement('div');m.className='meta';
   m.innerHTML=`<h2>${g.name}</h2><p>${g.desc}</p>`;
-  if(g.key){const b=+localStorage.getItem(g.key)||0;const s=document.createElement('span');s.className='best';s.textContent=b?`Best ${b}`:'Best —';m.appendChild(s)}
+  if(g.key){const b=+localStorage.getItem(g.key)||0;const lv=+localStorage.getItem(g.lkey)||0;const s=document.createElement('span');s.className='best';s.textContent=(b?`Best ${b}`:'Best —')+(lv?` · Lv ${lv}`:'');m.appendChild(s)}
   else{const s=document.createElement('span');s.className='best';s.textContent='Open →';m.appendChild(s)}
   a.appendChild(m);return a}
 const grid=document.getElementById('grid');

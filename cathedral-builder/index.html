@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Cathedral Builder</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#2a2118;overflow:hidden;touch-action:none;font-family:Georgia,serif}
+#wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+canvas{display:block;max-width:100%;max-height:100%;touch-action:none}
+#ui{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2}
+#panel{pointer-events:auto;background:rgba(30,24,16,.94);border:1px solid #c9a86c;border-radius:16px;padding:28px 24px;width:min(300px,90vw);text-align:center;color:#f5e6c8}
+#panel h1{font-size:1.3rem;color:#ffd98a;margin-bottom:8px}
+#panel p{font-size:.85rem;line-height:1.45;margin-bottom:16px;opacity:.9}
+#panel button{display:block;width:100%;margin:8px 0;padding:12px;border:none;border-radius:10px;background:#c9a86c;color:#2a2118;font:600 1rem Georgia,serif;cursor:pointer}
+#panel button.sec{background:transparent;border:1px solid #c9a86c;color:#f5e6c8}
+#mute{position:fixed;top:10px;right:10px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid #c9a86c;background:rgba(30,24,16,.8);color:#f5e6c8;font-size:1.1rem;cursor:pointer}
+#hud{position:fixed;top:12px;left:12px;z-index:3;color:#f5e6c8;font-size:.85rem;text-shadow:0 1px 3px #000;pointer-events:none}
+#banner{position:fixed;top:42%;left:0;right:0;z-index:4;text-align:center;font:600 1.4rem Georgia,serif;color:#ffd98a;text-shadow:0 2px 8px #000;pointer-events:none;opacity:0;transition:opacity .2s}
+</style></head><body>
+<button id="mute" aria-label="Mute">🔊</button>
+<div id="hud"></div><div id="banner"></div>
+<div id="ui"><div id="panel"></div></div>
+<div id="wrap"><canvas id="c"></canvas></div>
+<script type="module">
+import*as THREE from'../vendor/three.module.min.js';
+const W=360,H=780,KEY='cathBest',LKEY='cathLvl';
+const cv=document.getElementById('c'),ui=document.getElementById('ui'),panel=document.getElementById('panel');
+const hud=document.getElementById('hud'),muteBtn=document.getElementById('mute'),banEl=document.getElementById('banner');
+let muted=localStorage.getItem('cmgMute')==='1',AC,state='menu',score=0,best=+localStorage.getItem(KEY)||0;
+let maxLvl=+localStorage.getItem(LKEY)||0,level=1,bannerT=0;
+muteBtn.textContent=muted?'🔇':'🔊';
+muteBtn.onclick=()=>{muted=!muted;localStorage.setItem('cmgMute',muted?'1':'0');muteBtn.textContent=muted?'🔇':'🔊'};
+function beep(f,d,type='sine',v=.08){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+function chime(){beep(784,.12);setTimeout(()=>beep(988,.18),90)}
+function show(html){panel.innerHTML=html;ui.style.display='flex'}
+function hide(){ui.style.display='none'}
+function flashBanner(txt){banEl.textContent=txt;banEl.style.opacity='1';bannerT=70}
+/* level -> slideSpeed, startShrink, perfectWindow */
+const LT={1:{sp:1.4,sh:0,pw:.12},2:{sp:1.55,sh:0,pw:.11},3:{sp:1.7,sh:0,pw:.1},4:{sp:1.9,sh:.02,pw:.1},
+5:{sp:2.1,sh:.03,pw:.09},6:{sp:2.3,sh:.04,pw:.09},7:{sp:2.5,sh:.05,pw:.08},8:{sp:2.7,sh:.06,pw:.08},
+9:{sp:2.9,sh:.07,pw:.07},10:{sp:3.1,sh:.08,pw:.07},11:{sp:3.3,sh:.09,pw:.06},12:{sp:3.5,sh:.1,pw:.06},
+13:{sp:3.7,sh:.11,pw:.055},14:{sp:3.9,sh:.12,pw:.05},15:{sp:4.1,sh:.13,pw:.05},16:{sp:4.3,sh:.14,pw:.045},
+17:{sp:4.5,sh:.15,pw:.045},18:{sp:4.7,sh:.16,pw:.04},19:{sp:4.9,sh:.17,pw:.04},20:{sp:5.1,sh:.18,pw:.035}};
+function L(n){return LT[Math.min(20,Math.max(1,n))]||LT[20]}
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:false,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(W,H,false);renderer.shadowMap.enabled=true;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(50,W/H,.1,80);cam.position.set(6,8,6);cam.lookAt(0,0,0);
+const hemi=new THREE.HemisphereLight(0xb8d4f0,0x8a6040,.85);scene.add(hemi);
+const sun=new THREE.DirectionalLight(0xffe0b0,.9);sun.position.set(5,12,4);sun.castShadow=true;
+sun.shadow.mapSize.set(512,512);scene.add(sun);
+const sky=new THREE.Mesh(new THREE.SphereGeometry(40,16,12),new THREE.MeshBasicMaterial({side:THREE.BackSide,vertexColors:true}));
+{const pos=sky.geometry.attributes.position,cols=[];for(let i=0;i<pos.count;i++){const y=pos.getY(i);const t=(y+40)/80;cols.push(.45+.2*t,.55+.25*t,.75+.15*t)}sky.geometry.setAttribute('color',new THREE.Float32BufferAttribute(cols,3))}
+scene.add(sky);
+const STONES=[0xc4a574,0xb8956a,0xd0b080,0xa88860,0xc9a86c];
+let stack=[],cur=null,dir=0,moving=true,baseY=0,camY=8,debris=[],axis='x';
+function mkMat(c){return new THREE.MeshLambertMaterial({color:c})}
+function addBlock(w,d,y,x,z,col,style){
+  const g=new THREE.BoxGeometry(w,0.5,d);const m=new THREE.Mesh(g,mkMat(col));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;scene.add(m);
+  if(style==='arch'&&w>1.2){const a=new THREE.Mesh(new THREE.BoxGeometry(w*.3,.35,.15),mkMat(0x8a7050));a.position.set(x,y+.35,z+d/2-.05);m.add(a)}
+  if(style==='rose'&&w>1.4){const r=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.12,10),mkMat(0x6a8ab0));r.rotation.x=Math.PI/2;r.position.set(0,.3,d/2-.02);m.add(r)}
+  if(style==='spire'){const s=new THREE.Mesh(new THREE.ConeGeometry(Math.min(w,d)*.35,.8,6),mkMat(0xb09060));s.position.set(0,.65,0);m.add(s)}
+  return{mesh:m,w,d,x,z,y}}
+function styleFor(lv){if(lv>=30)return'spire';if(lv>=20)return'rose';if(lv>=10)return'arch';return'plain'}
+function startScreen(){state='menu';show(`<h1>Cathedral Builder</h1><p>Tap or Space to drop each stone. Stack high; perfect drops ring a bell. Overhang is cut away. Score is height.</p><button id="go">Build</button>`);document.getElementById('go').onclick=start}
+function gameOver(){state='over';best=Math.max(best,score);maxLvl=Math.max(maxLvl,level);localStorage.setItem(KEY,best);localStorage.setItem(LKEY,maxLvl);beep(180,.35,'triangle');
+show(`<h1>Stone Falls</h1><p>Height: ${score}<br>Best: ${best}<br>Level ${level}</p><button id="again">Play again</button><button class="sec" id="back">Back to menu</button>`);
+document.getElementById('again').onclick=start;document.getElementById('back').onclick=()=>location.href='../'}
+function clearStack(){stack.forEach(b=>scene.remove(b.mesh));debris.forEach(d=>scene.remove(d.mesh));stack=[];debris=[];if(cur){scene.remove(cur.mesh);cur=null}}
+function spawnMoving(){
+  const prev=stack[stack.length-1];const cfg=L(level);
+  let w=prev.w*(1-cfg.sh*.15),d=prev.d*(1-cfg.sh*.15);w=Math.max(.4,w);d=Math.max(.4,d);
+  axis=level%2===0?'x':'z';dir=1;moving=true;
+  const col=STONES[level%STONES.length];
+  const start=axis==='x'?{x:prev.x-4.2,z:prev.z}:{x:prev.x,z:prev.z-4.2};
+  cur=addBlock(w,d,baseY,start.x,start.z,col,styleFor(level));
+}
+function start(){hide();clearStack();state='play';score=0;level=1;baseY=0;camY=8;cam.position.set(6,8,6);
+const base=addBlock(3.2,3.2,0,0,0,0xa88860,'plain');stack.push(base);baseY=.5;spawnMoving();beep(440,.1);flashBanner('Level 1')}
+function place(){
+  if(state!=='play'||!cur||!moving)return;moving=false;
+  const prev=stack[stack.length-1];const cfg=L(level);
+  let nx=cur.x,nz=cur.z,nw=cur.w,nd=cur.d;
+  if(axis==='x'){const dx=cur.x-prev.x,ov=Math.abs(dx);if(ov>=prev.w){failPiece();return}
+    nw=prev.w-ov;nx=prev.x+dx/2;sliceFall(dx>0?prev.x+prev.w/2:prev.x-prev.w/2,cur.z,ov,cur.d,dx)}
+  else{const dz=cur.z-prev.z,ov=Math.abs(dz);if(ov>=prev.d){failPiece();return}
+    nd=prev.d-ov;nz=prev.z+dz/2;sliceFall(cur.x,dz>0?prev.z+prev.d/2:prev.z-prev.d/2,cur.w,ov,dz)}
+  scene.remove(cur.mesh);
+  const perfect=(axis==='x'?Math.abs(cur.x-prev.x):Math.abs(cur.z-prev.z))<cfg.pw;
+  if(perfect){nx=prev.x;nz=prev.z;nw=prev.w;nd=prev.d;score+=2;chime()}else{score+=1;beep(360,.06)}
+  const placed=addBlock(nw,nd,baseY,nx,nz,STONES[level%STONES.length],styleFor(level));
+  stack.push(placed);baseY+=.5;level++;maxLvl=Math.max(maxLvl,level);
+  if(level<=20||level%5===0)flashBanner('Level '+level);
+  camY=8+baseY*.55;spawnMoving();
+}
+function failPiece(){scene.remove(cur.mesh);cur=null;gameOver()}
+function sliceFall(x,z,w,d,sign){
+  if(w<.05||d<.05)return;const m=new THREE.Mesh(new THREE.BoxGeometry(Math.abs(w)||.2,.5,Math.abs(d)||.2),mkMat(0x8a7050));
+  m.position.set(x,baseY,z);scene.add(m);debris.push({mesh:m,vy:0,vx:sign>0?.08:-.08,life:90})}
+function update(){
+  if(bannerT>0){bannerT--;if(bannerT===0)banEl.style.opacity='0'}
+  if(state!=='play'||!cur)return;
+  const cfg=L(level);
+  if(moving){const sp=cfg.sp*.04;if(axis==='x'){cur.x+=dir*sp;cur.mesh.position.x=cur.x;if(cur.x>4.2||cur.x<-4.2)dir*=-1}
+    else{cur.z+=dir*sp;cur.mesh.position.z=cur.z;if(cur.z>4.2||cur.z<-4.2)dir*=-1}}
+  debris=debris.filter(d=>{d.vy-=.012;d.mesh.position.y+=d.vy;d.mesh.position.x+=d.vx;d.mesh.rotation.z+=.05;d.life--;if(d.life<=0){scene.remove(d.mesh);return false}return true});
+  cam.position.y+=(camY-cam.position.y)*.04;cam.lookAt(0,baseY-1,0);
+  hud.textContent=`Score ${score} · Best ${best} · Level ${level}`;
+}
+function loop(){update();renderer.render(scene,cam);requestAnimationFrame(loop)}
+function drop(){if(state==='play')place()}
+cv.addEventListener('pointerdown',e=>{e.preventDefault();drop()});
+window.addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='Enter'){e.preventDefault();drop()}});
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);cv.style.width=W*s+'px';cv.style.height=H*s+'px'}
+addEventListener('resize',fit);fit();
+window.__cmgTest={getLevel:()=>level,getState:()=>state,advance:()=>{if(state==='menu')start();else if(state==='play'){cur.x=stack[stack.length-1].x;cur.z=stack[stack.length-1].z;cur.mesh.position.x=cur.x;cur.mesh.position.z=cur.z;place()}},L};
+startScreen();loop();
+</script></body></html>

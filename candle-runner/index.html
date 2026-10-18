@@ -15,37 +15,57 @@ canvas{display:block;background:#2a2035;max-width:100%;max-height:100%;touch-act
 #panel button.sec{background:transparent;border:1px solid #c9a86c;color:#f5e6c8}
 #mute{position:fixed;top:10px;right:10px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid #c9a86c;background:rgba(20,15,30,.8);color:#f5e6c8;font-size:1.1rem;cursor:pointer}
 #hud{position:fixed;top:12px;left:12px;z-index:3;color:#f5e6c8;font-size:.85rem;text-shadow:0 1px 3px #000;pointer-events:none}
+#banner{position:fixed;top:42%;left:0;right:0;z-index:4;text-align:center;font:600 1.4rem Georgia,serif;color:#ffd98a;text-shadow:0 2px 8px #000;pointer-events:none;opacity:0;transition:opacity .2s}
 </style></head><body>
 <button id="mute" aria-label="Mute">🔊</button>
-<div id="hud"></div>
+<div id="hud"></div><div id="banner"></div>
 <div id="ui"><div id="panel"></div></div>
 <div id="wrap"><canvas id="c" width="360" height="780"></canvas></div>
 <script>
-const W=360,H=780,LS=['candleBest'],cv=document.getElementById('c'),ctx=cv.getContext('2d');
-const ui=document.getElementById('ui'),panel=document.getElementById('panel'),hud=document.getElementById('hud'),muteBtn=document.getElementById('mute');
-let muted=localStorage.getItem('cmgMute')==='1',AC,state='menu',score=0,best=+localStorage.getItem(LS[0])||0;
-let lane=1,lanes=[W*.25,W*.5,W*.75],y=H*.72,vy=0,onGround=true,flame=100,speed=2.2,scroll=0,obs=[],inc=[],t=0,keys={};
+const W=360,H=780,KEY='candleBest',LKEY='candleLvl',cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const ui=document.getElementById('ui'),panel=document.getElementById('panel'),hud=document.getElementById('hud'),muteBtn=document.getElementById('mute'),banEl=document.getElementById('banner');
+let muted=localStorage.getItem('cmgMute')==='1',AC,state='menu',score=0,best=+localStorage.getItem(KEY)||0,maxLvl=+localStorage.getItem(LKEY)||0;
+let lane=1,lanes=[W*.25,W*.5,W*.75],y=H*.72,vy=0,onGround=true,flame=100,scroll=0,obs=[],inc=[],t=0,keys={},level=1,bannerT=0,dist=0;
 muteBtn.textContent=muted?'🔇':'🔊';
 muteBtn.onclick=()=>{muted=!muted;localStorage.setItem('cmgMute',muted?'1':'0');muteBtn.textContent=muted?'🔇':'🔊'};
 function beep(f,d,type='sine',v=.08){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
 function show(html){panel.innerHTML=html;ui.style.display='flex'}
 function hide(){ui.style.display='none'}
+function flashBanner(txt){banEl.textContent=txt;banEl.style.opacity='1';bannerT=70}
+/* speed, spawnGap, incenseChance, gustDmg, pewDmg, drain, hazards: bats@4, double@8, dark@12 */
+const LT={1:{sp:2.2,sg:55,ic:.4,gd:14,pd:22,dr:.03},2:{sp:2.4,sg:50,ic:.38,gd:15,pd:23,dr:.032},3:{sp:2.6,sg:46,ic:.36,gd:16,pd:24,dr:.034},
+4:{sp:2.8,sg:42,ic:.34,gd:17,pd:25,dr:.036},5:{sp:3.0,sg:40,ic:.32,gd:18,pd:26,dr:.038},6:{sp:3.2,sg:38,ic:.3,gd:19,pd:27,dr:.04},
+7:{sp:3.4,sg:36,ic:.28,gd:20,pd:28,dr:.042},8:{sp:3.6,sg:34,ic:.26,gd:21,pd:29,dr:.044},9:{sp:3.8,sg:32,ic:.24,gd:22,pd:30,dr:.046},
+10:{sp:4.0,sg:30,ic:.22,gd:23,pd:31,dr:.048},11:{sp:4.2,sg:29,ic:.2,gd:24,pd:32,dr:.05},12:{sp:4.4,sg:28,ic:.18,gd:25,pd:33,dr:.052},
+13:{sp:4.6,sg:27,ic:.17,gd:26,pd:34,dr:.054},14:{sp:4.8,sg:26,ic:.16,gd:27,pd:35,dr:.056},15:{sp:5.0,sg:25,ic:.15,gd:28,pd:36,dr:.058},
+16:{sp:5.15,sg:24,ic:.14,gd:28,pd:37,dr:.06},17:{sp:5.3,sg:23,ic:.13,gd:29,pd:38,dr:.062},18:{sp:5.45,sg:22,ic:.12,gd:29,pd:38,dr:.064},
+19:{sp:5.6,sg:22,ic:.12,gd:30,pd:39,dr:.066},20:{sp:5.75,sg:21,ic:.1,gd:30,pd:40,dr:.068}};
+function L(n){return LT[Math.min(20,Math.max(1,n))]||LT[20]}
 function startScreen(){state='menu';show(`<h1>Candle Runner</h1><p>Carry a lit candle down the aisle. Swipe/tap left-right to change lanes, tap or Space to jump. Dodge draughts &amp; pews; collect incense. Flame out = end.</p><button id="go">Begin</button>`);document.getElementById('go').onclick=start}
-function gameOver(){state='over';best=Math.max(best,score);localStorage.setItem(LS[0],best);beep(180,.3,'triangle');show(`<h1>Flame Out</h1><p>Score: ${score}<br>Best: ${best}</p><button id="again">Play again</button><button class="sec" id="back">Back to menu</button>`);document.getElementById('again').onclick=start;document.getElementById('back').onclick=()=>location.href='../'}
-function start(){hide();state='play';score=0;lane=1;y=H*.72;vy=0;onGround=true;flame=100;speed=2.2;scroll=0;obs=[];inc=[];t=0;beep(440,.1)}
-function spawn(){const r=Math.random();const ln=Math.floor(Math.random()*3);if(r<.55)obs.push({x:lanes[ln],y:-40,type:r<.3?'gust':'pew',ln});else if(r<.85)inc.push({x:lanes[ln],y:-30,ln})}
-function update(){if(state!=='play')return;t++;scroll+=speed;speed=2.2+Math.min(2.5,score/800);if(t%Math.max(28,55-score/40|0)===0)spawn();
+function gameOver(){state='over';best=Math.max(best,score);maxLvl=Math.max(maxLvl,level);localStorage.setItem(KEY,best);localStorage.setItem(LKEY,maxLvl);beep(180,.3,'triangle');show(`<h1>Flame Out</h1><p>Score: ${score}<br>Best: ${best}<br>Level ${level}</p><button id="again">Play again</button><button class="sec" id="back">Back to menu</button>`);document.getElementById('again').onclick=start;document.getElementById('back').onclick=()=>location.href='../'}
+function start(){hide();state='play';score=0;lane=1;y=H*.72;vy=0;onGround=true;flame=100;scroll=0;obs=[];inc=[];t=0;level=1;dist=0;flashBanner('Level 1');beep(440,.1)}
+function spawn(){const cfg=L(level),r=Math.random(),ln=Math.floor(Math.random()*3);
+if(r<cfg.ic)inc.push({x:lanes[ln],y:-30,ln});
+else{let type='pew';if(r<.45)type='gust';if(level>=4&&r>.85)type='bat';if(level>=8&&r>.7&&r<=.85){obs.push({x:lanes[ln],y:-40,type:'pew',ln});obs.push({x:lanes[(ln+1)%3],y:-40,type:'gust',ln:(ln+1)%3});return}
+if(level>=12&&type==='gust')type=Math.random()<.5?'dark':'gust';obs.push({x:lanes[ln],y:-40,type,ln})}}
+function levelUp(){level++;maxLvl=Math.max(maxLvl,level);flashBanner('Level '+level);beep(660,.1);score+=20}
+function update(){if(bannerT>0){bannerT--;if(bannerT===0)banEl.style.opacity='0'}
+if(state!=='play')return;t++;const cfg=L(level);scroll+=cfg.sp;dist+=cfg.sp;if(dist>400){dist=0;levelUp()}
+if(t%Math.max(18,cfg.sg|0)===0)spawn();
 vy+=.45;y+=vy;if(y>=H*.72){y=H*.72;vy=0;onGround=true}
-obs.forEach(o=>o.y+=speed);inc.forEach(o=>o.y+=speed);
-obs=obs.filter(o=>{if(o.y>H+40)return false;if(o.ln===lane&&Math.abs(o.y-y)<36&&onGround){if(o.type==='gust'){flame-=18;beep(220,.08,'sawtooth')}else{flame-=28;beep(160,.12,'square')}return false}return true});
+obs.forEach(o=>o.y+=cfg.sp);inc.forEach(o=>o.y+=cfg.sp);
+obs=obs.filter(o=>{if(o.y>H+40)return false;if(o.ln===lane&&Math.abs(o.y-y)<36&&(onGround||o.type==='bat')){if(o.type==='gust'){flame-=cfg.gd;beep(220,.08,'sawtooth')}else if(o.type==='bat'){flame-=cfg.gd+8;beep(200,.1,'sawtooth')}else if(o.type==='dark'){flame-=cfg.pd+5;beep(140,.12,'square')}else{flame-=cfg.pd;beep(160,.12,'square')}return false}return true});
 inc=inc.filter(o=>{if(o.y>H+30)return false;if(o.ln===lane&&Math.abs(o.y-y)<40){flame=Math.min(100,flame+22);score+=15;beep(660,.1);return false}return true});
-flame-=.035+speed*.01;score+=1;if(flame<=0){flame=0;gameOver()}
-hud.textContent=`Score ${score} · Best ${best} · Flame ${Math.ceil(flame)}%`}
+flame-=cfg.dr+cfg.sp*.008;score+=1;if(flame<=0){flame=0;gameOver()}
+hud.textContent=`Score ${score} · Best ${best} · Level ${level} · Flame ${Math.ceil(flame)}%`}
 function draw(){ctx.clearRect(0,0,W,H);
-const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1e1830');g.addColorStop(1,'#3a2a20');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,level>=12?'#0e0a18':'#1e1830');g.addColorStop(1,'#3a2a20');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
 for(let i=-1;i<12;i++){const py=((scroll*0.3+i*80)%(H+80))-40;ctx.fillStyle='#4a3a28';ctx.fillRect(20,py,8,70);ctx.fillRect(W-28,py,8,70);ctx.fillStyle='#5a4830';ctx.fillRect(28,py+60,W-56,6)}
 ctx.strokeStyle='rgba(201,168,108,.2)';ctx.setLineDash([8,12]);lanes.forEach(lx=>{ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(lx,H);ctx.stroke()});ctx.setLineDash([]);
-obs.forEach(o=>{if(o.type==='gust'){ctx.fillStyle='rgba(180,200,220,.35)';ctx.beginPath();for(let i=0;i<5;i++){ctx.ellipse(o.x-10+i*8,o.y,10,6,0,0,6.28)}ctx.fill()}else{ctx.fillStyle='#5c4030';ctx.fillRect(o.x-28,o.y-12,56,24);ctx.fillStyle='#3d2a1a';ctx.fillRect(o.x-28,o.y-12,56,6)}});
+obs.forEach(o=>{if(o.type==='gust'){ctx.fillStyle='rgba(180,200,220,.35)';ctx.beginPath();for(let i=0;i<5;i++){ctx.ellipse(o.x-10+i*8,o.y,10,6,0,0,6.28)}ctx.fill()}
+else if(o.type==='bat'){ctx.fillStyle='#2a2030';ctx.beginPath();ctx.ellipse(o.x,o.y,14,7,0,0,6.28);ctx.fill()}
+else if(o.type==='dark'){ctx.fillStyle='rgba(20,10,30,.7)';ctx.fillRect(o.x-32,o.y-16,64,32)}
+else{ctx.fillStyle='#5c4030';ctx.fillRect(o.x-28,o.y-12,56,24);ctx.fillStyle='#3d2a1a';ctx.fillRect(o.x-28,o.y-12,56,6)}});
 inc.forEach(o=>{ctx.fillStyle='#c9a86c';ctx.beginPath();ctx.arc(o.x,o.y,7,0,6.28);ctx.fill();ctx.fillStyle='#ffe8a0';ctx.beginPath();ctx.arc(o.x-2,o.y-2,2.5,0,6.28);ctx.fill()});
 const px=lanes[lane];ctx.fillStyle='#3a2a48';ctx.fillRect(px-14,y-8,28,36);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(px,y-18,10,0,6.28);ctx.fill();
 ctx.fillStyle='#e8e0d0';ctx.fillRect(px-3,y-50,6,34);const fs=flame/100;ctx.fillStyle=`rgba(255,${140+fs*80|0},40,.9)`;ctx.beginPath();ctx.ellipse(px,y-58-fs*8,5*fs+2,12*fs+4,0,0,6.28);ctx.fill();ctx.fillStyle='#fff8c0';ctx.beginPath();ctx.ellipse(px,y-56-fs*6,2.5*fs+1,6*fs+2,0,0,6.28);ctx.fill();
@@ -59,5 +79,5 @@ cv.addEventListener('touchend',e=>{const tch=e.changedTouches[0],dx=tch.clientX-
 window.addEventListener('keydown',e=>{if(keys[e.code])return;keys[e.code]=1;if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);if(e.code==='ArrowRight'||e.code==='KeyD')move(1);if(e.code==='Space'||e.code==='ArrowUp')jump()});
 window.addEventListener('keyup',e=>{keys[e.code]=0});
 function fit(){const s=Math.min(innerWidth/W,innerHeight/H);cv.style.width=W*s+'px';cv.style.height=H*s+'px'}
-addEventListener('resize',fit);fit();startScreen();loop();
+addEventListener('resize',fit);fit();window.__cmgTest={getLevel:()=>level,getState:()=>state,advance:()=>{if(state==='menu')start();else levelUp()},L};startScreen();loop();
 </script></body></html>
