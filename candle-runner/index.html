@@ -31,7 +31,7 @@ muteBtn.onclick=()=>{muted=!muted;localStorage.setItem('cmgMute',muted?'1':'0');
 function beep(f,d,type='sine',v=.08){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
 function show(html){panel.innerHTML=html;ui.style.display='flex'}
 function hide(){ui.style.display='none'}
-function flashBanner(txt){banEl.textContent=txt;banEl.style.opacity='1';bannerT=70}
+function flashBanner(txt){}
 /* speed, spawnGap, incenseChance, gustDmg, pewDmg, drain, hazards: bats@4, double@8, dark@12 */
 const LT={1:{sp:2.2,sg:55,ic:.4,gd:14,pd:22,dr:.03},2:{sp:2.4,sg:50,ic:.38,gd:15,pd:23,dr:.032},3:{sp:2.6,sg:46,ic:.36,gd:16,pd:24,dr:.034},
 4:{sp:2.8,sg:42,ic:.34,gd:17,pd:25,dr:.036},5:{sp:3.0,sg:40,ic:.32,gd:18,pd:26,dr:.038},6:{sp:3.2,sg:38,ic:.3,gd:19,pd:27,dr:.04},
