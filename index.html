@@ -64,7 +64,7 @@ body.locked #lock{display:flex}
 
 <script>
 /** Stripe Payment Link — swap for the live link when ready */
-const PAY_URL='https://buy.stripe.com/test_aFacN5dNG94J6qsdOpa3u00';
+const PAY_URL='https://buy.stripe.com/bJe28rdPB8uKgXkeXOe7m00';
 
 const GAMES=[
 {href:'candle-runner/',key:'candleBest',lkey:'candleLvl',name:'Candle Runner',desc:'Carry a lit candle down the aisle.',draw:drawCandle},
@@ -118,7 +118,7 @@ function applyLock(){
 (function boot(){
   const params=new URLSearchParams(location.search);
   let justUnlocked=false;
-  if(params.get('unlock')==='cg1'){
+  if(['cg1','owner-mk7731'].includes(params.get('unlock'))){
     localStorage.setItem('cg_unlocked','1');
     justUnlocked=true;
     history.replaceState(null,'',location.pathname+(location.hash||''));
