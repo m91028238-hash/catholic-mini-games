@@ -112,7 +112,7 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2800);
 }
 function applyLock(){
-  const unlocked=localStorage.getItem('cg_unlocked')==='1';
+  const unlocked=true;
   document.body.classList.toggle('locked',!unlocked);
 }
 (function boot(){
