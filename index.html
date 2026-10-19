@@ -7,14 +7,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Catholic Games">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <title>Catholic Games</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{min-height:100%;font-family:Georgia,"Times New Roman",serif;background:#2a2118;color:#f5e6c8;-webkit-tap-highlight-color:transparent}
-body{background:linear-gradient(165deg,#3d2e1f 0%,#2a2118 40%,#1e1810 100%);padding:20px 16px 40px;display:flex;flex-direction:column;align-items:center}
+body{background:linear-gradient(165deg,#3d2e1f 0%,#2a2118 40%,#1e1810 100%);padding:20px 16px 40px;display:flex;flex-direction:column;align-items:center;position:relative}
 header{text-align:center;margin-bottom:22px;max-width:400px}
 .cross{width:48px;height:48px;margin:0 auto 10px;display:block}
 h1{font-size:1.75rem;font-weight:600;color:#ffd98a;letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.4)}
@@ -33,6 +33,17 @@ a.tile.wide .ico{margin-bottom:0}
 .meta p{font-size:.72rem;line-height:1.35;opacity:.85}
 .best{font-size:.7rem;margin-top:4px;color:#c9a86c;opacity:.95}
 .sec-label{grid-column:1/-1;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:#c9a86c;opacity:.7;margin:8px 0 0;text-align:center}
+body.locked header .tag{visibility:hidden}
+body.locked #grid{filter:blur(5px) brightness(.55);pointer-events:none;user-select:none}
+#lock{display:none;position:fixed;inset:0;z-index:40;align-items:center;justify-content:center;padding:24px 18px;background:rgba(20,14,10,.55)}
+body.locked #lock{display:flex}
+.lock-card{text-align:center;max-width:320px;width:100%;padding:28px 22px;border-radius:18px;background:linear-gradient(165deg,rgba(61,46,31,.96),rgba(30,24,16,.98));border:1px solid rgba(201,168,108,.45);box-shadow:0 12px 40px rgba(0,0,0,.45)}
+.lock-card h2{font-size:1.45rem;color:#ffd98a;font-weight:600;margin-bottom:10px}
+.lock-card p{font-size:.92rem;opacity:.85;line-height:1.4;margin-bottom:22px}
+.pay-btn{display:block;width:100%;padding:16px 18px;border-radius:14px;border:1px solid #c9a86c;background:linear-gradient(160deg,#6a5430,#3d3220);color:#ffd98a;font-size:1.05rem;font-weight:600;font-family:inherit;text-decoration:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.pay-btn:active{transform:scale(.98)}
+#toast{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:50;background:rgba(20,14,10,.9);border:1px solid rgba(201,168,108,.45);color:#ffd98a;padding:8px 16px;border-radius:10px;font-size:.82rem;opacity:0;pointer-events:none;transition:opacity .25s}
+#toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -42,8 +53,19 @@ a.tile.wide .ico{margin-bottom:0}
 <p class="tag">Quiet games of faith — add to your home screen</p>
 </header>
 <nav class="grid" id="grid"></nav>
+<div id="lock" aria-modal="true" role="dialog">
+  <div class="lock-card">
+    <h2>Catholic Games</h2>
+    <p>Unlock all games for a one-off £1.</p>
+    <a class="pay-btn" id="pay-btn" href="#">Pay £1 to unlock</a>
+  </div>
+</div>
+<div id="toast" role="status"></div>
 
 <script>
+/** Stripe Payment Link — swap for the live link when ready */
+const PAY_URL='https://buy.stripe.com/test_aFacN5dNG94J6qsdOpa3u00';
+
 const GAMES=[
 {href:'candle-runner/',key:'candleBest',lkey:'candleLvl',name:'Candle Runner',desc:'Carry a lit candle down the aisle.',draw:drawCandle},
 {href:'procession-dash/',key:'procBest',lkey:'procLvl',name:'Procession Dash',desc:'Steer the Corpus Christi procession.',draw:drawProcession},
@@ -81,6 +103,29 @@ const grid=document.getElementById('grid');
 GAMES.forEach(g=>grid.appendChild(tile(g,false)));
 const lab=document.createElement('div');lab.className='sec-label';lab.textContent='More games';grid.appendChild(lab);
 EXT.forEach(g=>grid.appendChild(tile(g,true)));
+
+document.getElementById('pay-btn').href=PAY_URL;
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+function applyLock(){
+  const unlocked=localStorage.getItem('cg_unlocked')==='1';
+  document.body.classList.toggle('locked',!unlocked);
+}
+(function boot(){
+  const params=new URLSearchParams(location.search);
+  let justUnlocked=false;
+  if(params.get('unlock')==='cg1'){
+    localStorage.setItem('cg_unlocked','1');
+    justUnlocked=true;
+    history.replaceState(null,'',location.pathname+(location.hash||''));
+  }
+  applyLock();
+  if(justUnlocked) showToast('Unlocked, thank you');
+})();
 </script>
 </body>
 </html>
