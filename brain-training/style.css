@@ -11,3 +11,6 @@ body{background:#3b2a1c;color:#3b2a1c;font-family:Georgia,serif;min-height:100vh
 #menu button{font-size:1.1rem}
 #toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:#c9a86c;color:#3b2a1c;padding:8px 14px;border-radius:10px;opacity:0;transition:opacity .3s;pointer-events:none;font-size:.9rem}
 #toast.on{opacity:1}
+#result{display:none;width:min(96vw,440px);margin:8px 12px 0;padding:8px 10px;border-radius:10px;background:#f3e4c4;border:2px solid #c9a86c;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem}
+#result.on{display:flex}#result span{color:#b8860b;font-size:1.2rem}#result button{margin-left:auto;padding:6px 12px;border-radius:8px;border:2px solid #8a6238;background:#ffd98a;font:600 .9rem Georgia,serif}
+.bar{height:6px;background:#d8c39a;border-radius:3px;margin:4px 0;overflow:hidden}.bar i{display:block;height:100%;background:#2e7d32}
