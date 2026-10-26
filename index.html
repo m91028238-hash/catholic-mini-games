@@ -75,6 +75,7 @@ const GAMES=[
 {href:'noahs-ark-catch/',key:'noahBest',lkey:'noahLvl',name:'Noah\'s Ark Catch',desc:'Catch animal pairs in the rain.',draw:drawArk},
 {href:'cathedral-builder/',key:'cathBest',lkey:'cathLvl',name:'Cathedral Builder',desc:'Stack stones to raise a cathedral.',draw:drawCath},
 {href:'word-search/',key:'ws_best',lkey:'ws_lvl',name:'Catholic Word Search',desc:'Find saints, sacraments and more.',draw:drawWS},
+{href:'brain-training/',key:'bt_best',lkey:'bt_lvl',name:'Catholic Brain Training',desc:'Memory, sequence and Bible order.',draw:drawBT},
 ];
 const EXT=[
 {href:'https://m91028238-hash.github.io/altar-server-game/',name:'Altar Server',desc:'Serve at the altar with care.',draw:drawAltar},
@@ -83,6 +84,7 @@ const EXT=[
 {href:'https://m91028238-hash.github.io/catholic-chess/?v=1',key:'cc_best',lkey:'cc_lvl',name:'Catholic Chess',desc:'3D chess on an engraved board.',draw:drawChess},
 ];
 function mkIcon(draw){const c=document.createElement('canvas');c.width=112;c.height=112;c.className='ico';draw(c.getContext('2d'));return c}
+function drawBT(ctx){ring(ctx);['#8b1e1e','#1e4b8b','#2e7d32','#b8860b','#6a1b9a'].forEach((c,i)=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(56+30*Math.cos(i*1.256-1.57),56+30*Math.sin(i*1.256-1.57),9,0,6.28);ctx.fill()});ctx.fillStyle='#c9a86c';ctx.fillRect(53,44,6,24);ctx.fillRect(46,50,20,5)}
 function drawWS(ctx){ring(ctx);ctx.fillStyle='#f3e4c4';ctx.fillRect(28,28,56,56);ctx.fillStyle='#3b2a1c';ctx.font='bold 14px Georgia';['AVE','SIN','TBE'].forEach((w,i)=>ctx.fillText(w.split('').join(' '),34,48+i*16));ctx.strokeStyle='#c08030';ctx.lineWidth=3;ctx.strokeRect(31,36,50,15)}
 function ring(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke()}
 function drawCandle(ctx){ring(ctx);ctx.fillStyle='#e8e0d0';ctx.fillRect(50,40,12,42);ctx.fillStyle='#ffb040';ctx.beginPath();ctx.ellipse(56,34,8,14,0,0,6.28);ctx.fill();ctx.fillStyle='#fff8c0';ctx.beginPath();ctx.ellipse(56,32,3,7,0,0,6.28);ctx.fill()}
