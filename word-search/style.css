@@ -11,3 +11,13 @@ body{background:#3b2a1c;color:#3b2a1c;font-family:Georgia,serif;min-height:100vh
 #list li.done{text-decoration:line-through;opacity:.5}
 #toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:#c9a86c;color:#3b2a1c;padding:8px 14px;border-radius:10px;opacity:0;transition:opacity .3s;pointer-events:none;font-size:.9rem}
 #toast.on{opacity:1}
+
+/* refined theme */
+body{background:#1a1612;font-family:'Source Serif 4',Georgia,serif}
+#top{background:#1a1612;border-bottom:1px solid rgba(210,180,108,.5);box-shadow:0 1px 0 rgba(210,180,108,.12),0 4px 0 -3px rgba(210,180,108,.15);color:#f4ead8;padding:12px 14px}
+#top a{color:#d2b46c}
+#top b{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:1.25rem;color:#e4c36a;letter-spacing:.02em}
+#top small{font-style:italic;color:#f3ece0;opacity:.7}
+#time{color:#d2b46c}
+#toast{background:#d2b46c;color:#1a1612;border-radius:3px}
+#list{color:#f3ece0}
