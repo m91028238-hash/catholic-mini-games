@@ -79,6 +79,7 @@ const EXT=[
 {href:'https://m91028238-hash.github.io/altar-server-game/',name:'Altar Server',desc:'Serve at the altar with care.',draw:drawAltar},
 {href:'https://m91028238-hash.github.io/parish-priest/',key:'pp_best',lkey:'pp_lvl',name:'Parish Priest',desc:'Story game for adults.',draw:drawPriest},
 {href:'https://m91028238-hash.github.io/pilgrim-rpg/',key:'pr_best',lkey:'pr_lvl',name:'The Pilgrim\'s Way',desc:'3D Camino pilgrimage RPG.',draw:drawPilgrim},
+{href:'https://m91028238-hash.github.io/catholic-chess/?v=1',key:'cc_best',lkey:'cc_lvl',name:'Catholic Chess',desc:'3D chess on an engraved board.',draw:drawChess},
 ];
 function mkIcon(draw){const c=document.createElement('canvas');c.width=112;c.height=112;c.className='ico';draw(c.getContext('2d'));return c}
 function ring(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke()}
@@ -92,6 +93,7 @@ function drawDove(ctx){ring(ctx);ctx.fillStyle='#2a6080';ctx.fillRect(16,72,80,2
 function drawAltar(ctx){ring(ctx);ctx.fillStyle='#e8e0d0';ctx.fillRect(28,68,56,14);ctx.fillRect(36,52,40,18);ctx.fillStyle='#ffd98a';ctx.fillRect(53,28,6,28);ctx.fillRect(44,36,24,6)}
 function drawPriest(ctx){ring(ctx);ctx.fillStyle='#2a2a30';ctx.fillRect(42,52,28,34);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,42,12,0,6.28);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(52,58,8,14)}
 function drawPilgrim(ctx){ring(ctx);ctx.fillStyle='#c8b890';ctx.fillRect(46,52,20,30);ctx.fillStyle='#e8c4a0';ctx.beginPath();ctx.arc(56,44,10,0,6.28);ctx.fill();ctx.fillStyle='#5a4030';ctx.beginPath();ctx.ellipse(56,36,16,4,0,0,6.28);ctx.fill();ctx.fillRect(48,28,16,10);ctx.fillStyle='#e8dcc0';ctx.beginPath();ctx.arc(68,38,5,0,6.28);ctx.fill();ctx.strokeStyle='#6a4a28';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(72,50);ctx.lineTo(78,88);ctx.stroke()}
+function drawChess(ctx){ring(ctx);ctx.fillStyle='#e8d4a8';for(let i=0;i<4;i++)for(let j=0;j<4;j++)if((i+j)%2)ctx.fillRect(32+i*12,58+j*8,12,8);ctx.fillStyle='#6a2a18';ctx.beginPath();ctx.arc(56,34,8,0,6.28);ctx.fill();ctx.fillRect(50,40,12,14);ctx.fillRect(44,52,24,6);ctx.fillStyle='#f4e4c0';ctx.fillRect(54,20,4,10);ctx.fillRect(51,23,10,3)}
 function tile(g,ext){
   const a=document.createElement('a');a.className='tile'+(ext?' wide':'');a.href=g.href;if(ext){a.target='_blank';a.rel='noopener'}
   a.appendChild(mkIcon(g.draw));
