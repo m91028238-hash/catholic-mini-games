@@ -74,6 +74,7 @@ const GAMES=[
 {href:'bell-tower-climb/',key:'bellBest',lkey:'bellLvl',name:'Bell Tower Climb',desc:'Climb beams and ring the bell.',draw:drawBell},
 {href:'noahs-ark-catch/',key:'noahBest',lkey:'noahLvl',name:'Noah\'s Ark Catch',desc:'Catch animal pairs in the rain.',draw:drawArk},
 {href:'cathedral-builder/',key:'cathBest',lkey:'cathLvl',name:'Cathedral Builder',desc:'Stack stones to raise a cathedral.',draw:drawCath},
+{href:'word-search/',key:'ws_best',lkey:'ws_lvl',name:'Catholic Word Search',desc:'Find saints, sacraments and more.',draw:drawWS},
 ];
 const EXT=[
 {href:'https://m91028238-hash.github.io/altar-server-game/',name:'Altar Server',desc:'Serve at the altar with care.',draw:drawAltar},
@@ -82,6 +83,7 @@ const EXT=[
 {href:'https://m91028238-hash.github.io/catholic-chess/?v=1',key:'cc_best',lkey:'cc_lvl',name:'Catholic Chess',desc:'3D chess on an engraved board.',draw:drawChess},
 ];
 function mkIcon(draw){const c=document.createElement('canvas');c.width=112;c.height=112;c.className='ico';draw(c.getContext('2d'));return c}
+function drawWS(ctx){ring(ctx);ctx.fillStyle='#f3e4c4';ctx.fillRect(28,28,56,56);ctx.fillStyle='#3b2a1c';ctx.font='bold 14px Georgia';['AVE','SIN','TBE'].forEach((w,i)=>ctx.fillText(w.split('').join(' '),34,48+i*16));ctx.strokeStyle='#c08030';ctx.lineWidth=3;ctx.strokeRect(31,36,50,15)}
 function ring(ctx){ctx.fillStyle='#4a3828';ctx.beginPath();ctx.arc(56,56,52,0,6.28);ctx.fill();ctx.strokeStyle='#c9a86c';ctx.lineWidth=3;ctx.stroke()}
 function drawCandle(ctx){ring(ctx);ctx.fillStyle='#e8e0d0';ctx.fillRect(50,40,12,42);ctx.fillStyle='#ffb040';ctx.beginPath();ctx.ellipse(56,34,8,14,0,0,6.28);ctx.fill();ctx.fillStyle='#fff8c0';ctx.beginPath();ctx.ellipse(56,32,3,7,0,0,6.28);ctx.fill()}
 function drawProcession(ctx){ring(ctx);ctx.fillStyle='#f5f0e8';ctx.fillRect(48,50,16,28);ctx.fillStyle='#f0d8b0';ctx.beginPath();ctx.arc(56,44,9,0,6.28);ctx.fill();ctx.fillStyle='#ffd98a';ctx.fillRect(54,18,4,22);ctx.beginPath();ctx.moveTo(56,14);ctx.lineTo(48,24);ctx.lineTo(64,24);ctx.fill();ctx.fillStyle='#d0c8e8';ctx.fillRect(30,62,12,20);ctx.fillRect(70,62,12,20)}
