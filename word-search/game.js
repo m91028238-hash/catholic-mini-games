@@ -19,7 +19,7 @@ function build(){
         if(ok){for(let i=0;i<w.length;i++)grid[r+dr*i][c+dc*i]=w[i];words.push({w,cells:[...Array(w.length)].map((_,i)=>(r+dr*i)*N+c+dc*i)});break}}}
     if(words.length>=Math.min(cnt,pool.length)||tries>30)break}
   const A='ABCDEFGHIJKLMNOPRSTUVWY';
-  G.style.gridTemplateColumns=`repeat(${N},1fr)`;G.style.setProperty('--fs',Math.floor(300/N)+'px');G.innerHTML='';
+  G.style.gridTemplateColumns=`repeat(${N},1fr)`;G.style.setProperty('--fs',Math.floor(200/N)+'px');G.innerHTML='';
   for(let i=0;i<N*N;i++){const s=document.createElement('span');s.textContent=grid[i/N|0][i%N]||A[Math.random()*A.length|0];s.dataset.i=i;G.appendChild(s)}
   found=new Set();$('obj').textContent=`Level ${lvl}: Find ${words.length} words`;$('theme').textContent=th;
   $('list').innerHTML=words.map(o=>`<li id="w_${o.w}">${o.w==='AGNUSDEI'?'AGNUS DEI':o.w==='HOLYORDERS'?'HOLY ORDERS':o.w}</li>`).join('');
