@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Catholic Games">
-<link rel="manifest" href="manifest.webmanifest?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <title>Catholic Games</title>
@@ -38,8 +38,8 @@ a.tile{position:relative;display:flex;flex-direction:column;align-items:center;t
 background:linear-gradient(180deg,rgba(40,16,22,.82),rgba(16,9,12,.9)) padding-box,linear-gradient(160deg,#f6e27a,#b8860b 40%,rgba(184,134,11,.35) 70%,#f3d98b) border-box;
 box-shadow:0 10px 28px -14px rgba(0,0,0,.8),inset 0 1px 0 rgba(246,226,122,.12);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .25s ease,box-shadow .25s ease}
 a.tile:hover,a.tile:focus-visible,a.tile:active{transform:translateY(-3px);box-shadow:0 0 0 1px rgba(246,226,122,.25),0 14px 34px -10px rgba(212,175,55,.38),inset 0 1px 0 rgba(246,226,122,.2);outline:none}
-.ico{width:72px;height:86px;margin-bottom:12px;overflow:visible;filter:drop-shadow(0 2px 6px rgba(212,175,55,.25))}
-.ico .fr{fill:rgba(122,20,38,.35);stroke:url(#gg);stroke-width:1.6}
+.ico{width:68px;height:68px;margin-bottom:12px;overflow:visible;filter:drop-shadow(0 2px 6px rgba(212,175,55,.25))}
+.ico .fr{fill:none;stroke:url(#gg);stroke-width:2.4}.shot{width:84px;height:120px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid rgba(212,175,55,.6);margin:-4px 0 10px;display:block;background:#1a0f14}
 .ico .em{fill:none;stroke:url(#gg);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .meta{display:flex;flex-direction:column;align-items:center;flex:1}
 .meta h2{font-family:var(--disp);font-weight:600;font-size:1.3rem;line-height:1.1;margin-bottom:6px;color:#f0dca0}
@@ -60,7 +60,7 @@ body.locked #lock{display:flex}
 <script defer src="https://cloud.umami.is/script.js" data-website-id="15ec783e-8882-42d9-b43b-fefd064bbe24"></script>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="80" y2="96"><stop offset="0" stop-color="#f6e27a"/><stop offset=".4" stop-color="#d4af37"/><stop offset=".7" stop-color="#b8860b"/><stop offset="1" stop-color="#f3d98b"/></linearGradient><linearGradient id="go" x1="0" x2="1"><stop offset="0" stop-color="#b8860b" stop-opacity="0"/><stop offset=".5" stop-color="#f6e27a"/><stop offset="1" stop-color="#b8860b" stop-opacity="0"/></linearGradient></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6b1426"/><stop offset="1" stop-color="#1c2147"/></linearGradient><linearGradient id="gg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="80" y2="96"><stop offset="0" stop-color="#f6e27a"/><stop offset=".4" stop-color="#d4af37"/><stop offset=".7" stop-color="#b8860b"/><stop offset="1" stop-color="#f3d98b"/></linearGradient><linearGradient id="go" x1="0" x2="1"><stop offset="0" stop-color="#b8860b" stop-opacity="0"/><stop offset=".5" stop-color="#f6e27a"/><stop offset="1" stop-color="#b8860b" stop-opacity="0"/></linearGradient></defs></svg>
 <header>
 <svg class="crown" viewBox="0 0 46 34" aria-hidden="true"><path d="M4 26L2 9l11 8 10-14 10 14 11-8-2 17Z" fill="url(#gg)"/><rect x="4" y="28" width="38" height="4" rx="1.5" fill="url(#gg)"/><circle cx="23" cy="15" r="2.2" fill="#7a1426"/></svg>
 <h1 class="gold">Catholic Games</h1>
@@ -107,7 +107,7 @@ const EXT=[
 {href:'https://m91028238-hash.github.io/catholic-chess/?v=20',key:'cc_best',lkey:'cc_lvl',name:'Checkmate in the Sistine',desc:'Walk the Sistine Chapel, view its paintings up close in fullscreen, then sit down to play chess.',draw:drawChess},
 ];
 const EM={"drawCandle": "M26 30H38V58H26ZM32 8C38 15 38 22 32 25C26 22 26 15 32 8ZM32 25V30M18 58H46", "drawArk": "M8 42H56L50 54H14ZM18 42V32H46V42M15 32L32 21L49 32M6 60Q12 56 18 60T30 60T42 60T54 60", "drawMichael": "M20 26H44V40Q44 51 32 57Q20 51 20 40ZM32 4V22M25 12H39M32 31V48M26 37H38", "drawProcession": "M32 4V60M22 16H42M26 60H38M32 22A6 6 0 1 0 32 10A6 6 0 1 0 32 22", "drawBell": "M20 46Q20 18 32 16Q44 18 44 46L49 51H15ZM32 16V8M27 8H37M32 51V55M29 57H35", "drawCath": "M6 58H58M12 58V24L18 13L24 24V58M40 58V24L46 13L52 24V58M24 58V36L32 27L40 36V58M29 58V52Q32 48 35 52V58M32 39A4 4 0 1 0 32 47A4 4 0 1 0 32 39", "drawWS": "M8 8H44V44H8ZM8 20H44M8 32H44M20 8V44M32 8V44M46 37A10 10 0 1 0 46 57A10 10 0 1 0 46 37M53 54L60 61", "drawBT": "M32 10A16 16 0 1 0 32 42A16 16 0 1 0 32 10M32 42V48M32 48V61M27 53H37", "drawAltar": "M18 18H46Q46 35 32 39Q18 35 18 18ZM32 39V50M22 58Q32 49 42 58ZM32 4A5 5 0 1 0 32 14A5 5 0 1 0 32 4", "drawPriest": "M10 58V34L32 18L54 34V58ZM32 18V4M27 9H37M27 58V47Q32 41 37 47V58M32 30A3 3 0 1 0 32 36A3 3 0 1 0 32 30M4 58H60", "drawPilgrim": "M32 54L10 28Q32 0 54 28ZM32 54L18 15M32 54L25 9M32 54V7M32 54L39 9M32 54L46 15M26 54H38V60H26Z", "drawPuzzle": "M14 58V26Q14 8 32 4Q50 8 50 26V58ZM32 4V58M14 32H50M14 45H50", "drawTetris": "M12 58V46H24V34H36V46H48V58ZM24 46H36M24 58V46M36 58V46M32 4V18M20 9L25 19M44 9L39 19", "drawMonk": "M24 22H40V48H24ZM22 48H42M22 22H42M27 22Q32 11 37 22M32 6V11M32 29Q37 35 32 41Q27 35 32 29", "drawMatch": "M8 8H28V28H8ZM36 8H56V28H36ZM8 36H28V56H8ZM36 36H56V56H36ZM46 40V52M41 45H51", "drawTrivia": "M6 16Q20 10 32 18Q44 10 58 16V54Q44 48 32 56Q20 48 6 54ZM32 18V56", "drawWord": "M4 18H18V32H4ZM25 18H39V32H25ZM46 18H60V32H46ZM4 38H18V52H4ZM25 38H39V52H25ZM46 38H60V52H46Z", "drawSol": "M8 16H32V54H8ZM32 12L54 20L44 56L32 52M20 26V42M14 32H26", "draw2048": "M8 8H30V30H8ZM34 8H56V30H34ZM8 34H30V56H8ZM34 34H56V56H34ZM45 41A4 4 0 1 0 45 49A4 4 0 1 0 45 41", "drawJump": "M8 54Q8 46 18 48Q22 40 32 44Q42 40 46 48Q56 47 56 54ZM32 4A5 5 0 1 0 32 14A5 5 0 1 0 32 4M32 14V28M23 19H41M32 28L26 36M32 28L38 36", "drawChess": "M18 58H46M22 58Q22 46 30 40Q22 39 17 33L27 19Q30 10 37 8Q50 13 48 34Q48 47 44 58M33 18H35"};
-function mkIcon(draw){const k=Object.keys(EM).find(n=>window[n]===draw)||draw.name;const d=EM[k]||'';const r=k==='drawBT'?'<path class="em" d="M32 10A16 16 0 1 0 32 42A16 16 0 1 0 32 10" stroke-dasharray="0.01 5.6" stroke-width="3.2"/>':'';const w=document.createElement('span');w.innerHTML=`<svg class="ico" viewBox="0 0 80 96" aria-hidden="true"><path class="fr" d="M6 94V40Q6 16 40 3Q74 16 74 40V94Z"/><g transform="translate(8,28)">${k==='drawBT'?r+'<path class="em" d="M32 42V61M27 53H37"/>':'<path class="em" d="'+d+'"/>'}</g></svg>`;return w.firstChild}
+function mkIcon(draw){const k=Object.keys(EM).find(n=>window[n]===draw)||draw.name;const d=EM[k]||'';const r=k==='drawBT'?'<path class="em" d="M32 10A16 16 0 1 0 32 42A16 16 0 1 0 32 10" stroke-dasharray="0.01 5.6" stroke-width="3.2"/>':'';const w=document.createElement('span');w.innerHTML=`<svg class="ico" viewBox="0 0 80 80" aria-hidden="true"><rect x="3" y="3" width="74" height="74" rx="18" fill="url(#bg2)"/><rect class="fr" x="3" y="3" width="74" height="74" rx="18"/><g transform="translate(8,9)">${k==='drawBT'?r+'<path class="em" d="M32 42V61M27 53H37"/>':'<path class="em" d="'+d+'"/>'}</g></svg>`;return w.firstChild}
 function drawBT(){}
 function drawWS(){}
 function drawCandle(){}
@@ -132,7 +132,7 @@ function draw2048(){}
 function drawJump(){}
 function tile(g,ext){
   const a=document.createElement('a');a.className='tile';a.href=g.href;if(ext){a.target='_blank';a.rel='noopener'}
-  a.appendChild(mkIcon(g.draw));
+  a.appendChild(mkIcon(g.draw));{const m=g.href.match(/([a-z0-9-]+)\/(\?|$)/);let sl=m?m[1]:'';if(sl==='altar-server-game')sl='altar-server';if(sl){const im=new Image();im.className='shot';im.loading='lazy';im.alt='';im.src='shots/'+sl+'.webp?v=1';im.onerror=()=>im.remove();a.appendChild(im)}}
   const m=document.createElement('div');m.className='meta';
   m.innerHTML=`<h2>${g.name}</h2><p>${g.desc}</p>`;
   if(g.key){const b=+localStorage.getItem(g.key)||0;const lv=+localStorage.getItem(g.lkey)||0;const s=document.createElement('span');s.className='best';s.textContent=(b?`Best ${b}`:'Best —')+(lv?` · Lv ${lv}`:'');m.appendChild(s)}
