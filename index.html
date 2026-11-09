@@ -56,6 +56,16 @@ body.locked #lock{display:flex}
 .pay-btn{display:block;width:100%;padding:14px 18px;border-radius:999px;background:var(--gold);color:#2a1608;font-weight:600;font-family:inherit;text-decoration:none;letter-spacing:.06em}
 #toast{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:50;background:#1a0a10;border:1px solid #b8860b;color:#e2c36a;padding:8px 16px;border-radius:999px;font-size:.82rem;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.show{opacity:1}
+
+.fav .cards{grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:520px){.fav .cards{grid-template-columns:1fr;gap:14px}}
+a.tile.fav-tile{padding:26px 14px 20px;border-radius:100px 100px 18px 18px;
+box-shadow:0 12px 32px -12px rgba(0,0,0,.85),0 0 0 1px rgba(246,226,122,.18),inset 0 1px 0 rgba(246,226,122,.18)}
+a.tile.fav-tile .pico{width:92px;height:92px;border-radius:22px;margin-bottom:14px}
+a.tile.fav-tile .shot{width:100px;height:142px;border-radius:12px;margin:-2px 0 12px;border-color:rgba(246,226,122,.75)}
+a.tile.fav-tile .meta h2{font-size:1.42rem}
+.sec-label.fav-label{font-size:1.2rem;letter-spacing:.3em;color:#f3d98b;margin-top:0}
+
 </style>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="15ec783e-8882-42d9-b43b-fefd064bbe24"></script>
 </head>
@@ -104,7 +114,7 @@ const EXT=[
 {href:'https://m91028238-hash.github.io/altar-server-game/',name:'Altar Server',desc:'Serve at the altar with care.',draw:drawAltar},
 {href:'https://m91028238-hash.github.io/parish-priest/',key:'pp_best',lkey:'pp_lvl',name:'Parish Priest',desc:'Story game for adults.',draw:drawPriest},
 {href:'https://m91028238-hash.github.io/pilgrim-rpg/',key:'pr_best',lkey:'pr_lvl',name:'The Pilgrim\'s Way',desc:'3D Camino pilgrimage RPG.',draw:drawPilgrim},
-{href:'https://m91028238-hash.github.io/catholic-chess/?v=27',key:'cc_best',lkey:'cc_lvl',name:'Checkmate in the Sistine',desc:'Walk the Sistine Chapel, view its paintings up close in fullscreen, then sit down to play chess.',draw:drawChess},
+{href:'https://m91028238-hash.github.io/catholic-chess/?v=28',key:'cc_best',lkey:'cc_lvl',name:'Checkmate in the Sistine',desc:'Walk the Sistine Chapel, view its paintings up close in fullscreen, then sit down to play chess.',draw:drawChess},
 ];
 const EM={"drawCandle": "M26 30H38V58H26ZM32 8C38 15 38 22 32 25C26 22 26 15 32 8ZM32 25V30M18 58H46", "drawArk": "M8 42H56L50 54H14ZM18 42V32H46V42M15 32L32 21L49 32M6 60Q12 56 18 60T30 60T42 60T54 60", "drawMichael": "M20 26H44V40Q44 51 32 57Q20 51 20 40ZM32 4V22M25 12H39M32 31V48M26 37H38", "drawProcession": "M32 4V60M22 16H42M26 60H38M32 22A6 6 0 1 0 32 10A6 6 0 1 0 32 22", "drawBell": "M20 46Q20 18 32 16Q44 18 44 46L49 51H15ZM32 16V8M27 8H37M32 51V55M29 57H35", "drawCath": "M6 58H58M12 58V24L18 13L24 24V58M40 58V24L46 13L52 24V58M24 58V36L32 27L40 36V58M29 58V52Q32 48 35 52V58M32 39A4 4 0 1 0 32 47A4 4 0 1 0 32 39", "drawWS": "M8 8H44V44H8ZM8 20H44M8 32H44M20 8V44M32 8V44M46 37A10 10 0 1 0 46 57A10 10 0 1 0 46 37M53 54L60 61", "drawBT": "M32 10A16 16 0 1 0 32 42A16 16 0 1 0 32 10M32 42V48M32 48V61M27 53H37", "drawAltar": "M18 18H46Q46 35 32 39Q18 35 18 18ZM32 39V50M22 58Q32 49 42 58ZM32 4A5 5 0 1 0 32 14A5 5 0 1 0 32 4", "drawPriest": "M10 58V34L32 18L54 34V58ZM32 18V4M27 9H37M27 58V47Q32 41 37 47V58M32 30A3 3 0 1 0 32 36A3 3 0 1 0 32 30M4 58H60", "drawPilgrim": "M32 54L10 28Q32 0 54 28ZM32 54L18 15M32 54L25 9M32 54V7M32 54L39 9M32 54L46 15M26 54H38V60H26Z", "drawPuzzle": "M14 58V26Q14 8 32 4Q50 8 50 26V58ZM32 4V58M14 32H50M14 45H50", "drawTetris": "M12 58V46H24V34H36V46H48V58ZM24 46H36M24 58V46M36 58V46M32 4V18M20 9L25 19M44 9L39 19", "drawMonk": "M24 22H40V48H24ZM22 48H42M22 22H42M27 22Q32 11 37 22M32 6V11M32 29Q37 35 32 41Q27 35 32 29", "drawMatch": "M8 8H28V28H8ZM36 8H56V28H36ZM8 36H28V56H8ZM36 36H56V56H36ZM46 40V52M41 45H51", "drawTrivia": "M6 16Q20 10 32 18Q44 10 58 16V54Q44 48 32 56Q20 48 6 54ZM32 18V56", "drawWord": "M4 18H18V32H4ZM25 18H39V32H25ZM46 18H60V32H46ZM4 38H18V52H4ZM25 38H39V52H25ZM46 38H60V52H46Z", "drawSol": "M8 16H32V54H8ZM32 12L54 20L44 56L32 52M20 26V42M14 32H26", "draw2048": "M8 8H30V30H8ZM34 8H56V30H34ZM8 34H30V56H8ZM34 34H56V56H34ZM45 41A4 4 0 1 0 45 49A4 4 0 1 0 45 41", "drawJump": "M8 54Q8 46 18 48Q22 40 32 44Q42 40 46 48Q56 47 56 54ZM32 4A5 5 0 1 0 32 14A5 5 0 1 0 32 4M32 14V28M23 19H41M32 28L26 36M32 28L38 36", "drawChess": "M18 58H46M22 58Q22 46 30 40Q22 39 17 33L27 19Q30 10 37 8Q50 13 48 34Q48 47 44 58M33 18H35"};
 function mkIcon(draw){const k=Object.keys(EM).find(n=>window[n]===draw)||draw.name;const d=EM[k]||'';const r=k==='drawBT'?'<path class="em" d="M32 10A16 16 0 1 0 32 42A16 16 0 1 0 32 10" stroke-dasharray="0.01 5.6" stroke-width="3.2"/>':'';const w=document.createElement('span');w.innerHTML=`<svg class="ico" viewBox="0 0 80 80" aria-hidden="true"><rect x="3" y="3" width="74" height="74" rx="18" fill="url(#bg2)"/><rect class="fr" x="3" y="3" width="74" height="74" rx="18"/><g transform="translate(8,9)">${k==='drawBT'?r+'<path class="em" d="M32 42V61M27 53H37"/>':'<path class="em" d="'+d+'"/>'}</g></svg>`;return w.firstChild}
@@ -140,6 +150,13 @@ function tile(g,ext){
   a.appendChild(m);return a}
 const grid=document.getElementById('grid');
 const ALL=[...GAMES.map(g=>[g,0]),...EXT.map(g=>[g,1])];
+(function favourites(){
+  const ids=['catholic-chess','pilgrim-rpg','altar-server'];
+  const h=document.createElement('h3');h.className='sec-label fav-label';h.innerHTML='<span>Our Favourites</span>';grid.appendChild(h);
+  const wrap=document.createElement('div');wrap.className='fav';grid.appendChild(wrap);
+  const c=document.createElement('div');c.className='cards';wrap.appendChild(c);
+  ids.forEach(id=>{const e=ALL.find(([g])=>g.href.includes(id));if(!e)return;const a=tile(e[0],e[1]);a.classList.add('fav-tile');c.appendChild(a)});
+})();
 [['Arcade',['heaven-tetris','lantern-monk','pilgrim-jumper','candle-runner','procession-dash','st-michael-defence','bell-tower-climb','noahs-ark-catch','cathedral-builder']],['Puzzles & Mind',['daily-word','bible-trivia','catholic-puzzle','cathedral-match','saints-2048','saints-solitaire','word-search','brain-training','catholic-chess']],['Adventures',['altar-server','parish-priest','pilgrim-rpg']]].forEach(([t,ids])=>{
   const h=document.createElement('h3');h.className='sec-label';h.innerHTML='<span>'+t+'</span>';grid.appendChild(h);
   const c=document.createElement('div');c.className='cards';grid.appendChild(c);
